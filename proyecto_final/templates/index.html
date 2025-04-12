@@ -1,0 +1,276 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioVirtual - Sistema de Gestión de Biblioteca</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Fuente de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="https://via.placeholder.com/40" alt="Logo BiblioVirtual">
+                <h1>BiblioVirtual</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#" class="active">Inicio</a></li>
+                    <li><a href="#">Catálogo</a></li>
+                    <li><a href="#">Colecciones</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button class="btn btn-outline">Iniciar Sesión</button>
+                <button class="btn btn-primary">Registrarse</button>
+            </div>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="#" class="active">Inicio</a></li>
+            <li><a href="#">Catálogo</a></li>
+            <li><a href="#">Colecciones</a></li>
+            <li class="mobile-auth">
+                <button class="btn btn-outline">Iniciar Sesión</button>
+                <button class="btn btn-primary">Registrarse</button>
+            </li>
+        </ul>
+    </div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h2>Tu biblioteca virtual al alcance de un clic</h2>
+                <p>Descubre, gestiona y disfruta de miles de libros digitales en nuestra plataforma.</p>
+                <div class="search-box">
+                    <input type="text" placeholder="Buscar por título, autor o género...">
+                    <button class="btn btn-primary">Buscar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Books -->
+        <section class="featured-books">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Libros Destacados</h2>
+                    <a href="#" class="view-all">Ver todos</a>
+                </div>
+                <div class="books-grid">
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="https://via.placeholder.com/200x300" alt="Cien años de soledad">
+                        </div>
+                        <div class="book-info">
+                            <h3>Cien años de soledad</h3>
+                            <p class="author">Gabriel García Márquez</p>
+                            <div class="book-footer">
+                                <span class="genre">Realismo mágico</span>
+                                <button class="btn btn-small">Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="https://via.placeholder.com/200x300" alt="El señor de los anillos">
+                        </div>
+                        <div class="book-info">
+                            <h3>El señor de los anillos</h3>
+                            <p class="author">J.R.R. Tolkien</p>
+                            <div class="book-footer">
+                                <span class="genre">Fantasía</span>
+                                <button class="btn btn-small">Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="https://via.placeholder.com/200x300" alt="1984">
+                        </div>
+                        <div class="book-info">
+                            <h3>1984</h3>
+                            <p class="author">George Orwell</p>
+                            <div class="book-footer">
+                                <span class="genre">Distopía</span>
+                                <button class="btn btn-small">Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="https://via.placeholder.com/200x300" alt="Don Quijote de la Mancha">
+                        </div>
+                        <div class="book-info">
+                            <h3>Don Quijote de la Mancha</h3>
+                            <p class="author">Miguel de Cervantes</p>
+                            <div class="book-footer">
+                                <span class="genre">Clásico</span>
+                                <button class="btn btn-small">Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="https://via.placeholder.com/200x300" alt="Harry Potter y la piedra filosofal">
+                        </div>
+                        <div class="book-info">
+                            <h3>Harry Potter y la piedra filosofal</h3>
+                            <p class="author">J.K. Rowling</p>
+                            <div class="book-footer">
+                                <span class="genre">Fantasía</span>
+                                <button class="btn btn-small">Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="https://via.placeholder.com/200x300" alt="Crimen y castigo">
+                        </div>
+                        <div class="book-info">
+                            <h3>Crimen y castigo</h3>
+                            <p class="author">Fiódor Dostoyevski</p>
+                            <div class="book-footer">
+                                <span class="genre">Novela psicológica</span>
+                                <button class="btn btn-small">Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="https://via.placeholder.com/200x300" alt="Orgullo y prejuicio">
+                        </div>
+                        <div class="book-info">
+                            <h3>Orgullo y prejuicio</h3>
+                            <p class="author">Jane Austen</p>
+                            <div class="book-footer">
+                                <span class="genre">Romance</span>
+                                <button class="btn btn-small">Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="https://via.placeholder.com/200x300" alt="El principito">
+                        </div>
+                        <div class="book-info">
+                            <h3>El principito</h3>
+                            <p class="author">Antoine de Saint-Exupéry</p>
+                            <div class="book-footer">
+                                <span class="genre">Fábula</span>
+                                <button class="btn btn-small">Detalles</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="categories">
+            <div class="container">
+                <h2>Explora por Categorías</h2>
+                <div class="categories-grid">
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <img src="https://via.placeholder.com/40" alt="Ficción">
+                        </div>
+                        <h3>Ficción</h3>
+                        <p>1245 libros</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <img src="https://via.placeholder.com/40" alt="No Ficción">
+                        </div>
+                        <h3>No Ficción</h3>
+                        <p>867 libros</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <img src="https://via.placeholder.com/40" alt="Ciencia">
+                        </div>
+                        <h3>Ciencia</h3>
+                        <p>532 libros</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <img src="https://via.placeholder.com/40" alt="Historia">
+                        </div>
+                        <h3>Historia</h3>
+                        <p>489 libros</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="container">
+                <h2>¿Listo para comenzar tu viaje literario?</h2>
+                <p>Regístrate hoy y obtén acceso a nuestra extensa colección de libros digitales.</p>
+                <div class="cta-buttons">
+                    <button class="btn btn-outline-light">Iniciar Sesión</button>
+                    <button class="btn btn-light">Registrarse Ahora</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <div class="logo">
+                        <img src="https://via.placeholder.com/40" alt="Logo BiblioVirtual">
+                        <h3>BiblioVirtual</h3>
+                    </div>
+                    <p>Tu plataforma de gestión de biblioteca virtual favorita.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="#">Inicio</a></li>
+                        <li><a href="#">Catálogo</a></li>
+                        <li><a href="#">Colecciones</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Ayuda</h4>
+                    <ul>
+                        <li><a href="#">Preguntas Frecuentes</a></li>
+                        <li><a href="#">Soporte</a></li>
+                        <li><a href="#">Términos de Servicio</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contacto</h4>
+                    <ul>
+                        <li>Email: info@bibliovirtual.com</li>
+                        <li>Teléfono: +1 (555) 123-4567</li>
+                        <li>Dirección: Calle Biblioteca 123, Ciudad</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="currentYear"></span> BiblioVirtual. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
