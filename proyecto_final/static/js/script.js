@@ -39,7 +39,7 @@ mobileLinks.forEach(link => {
 // Actualizar el año actual en el footer
 document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-// Funcionalidad para los botones de inicio de sesión y registro
+/*// Funcionalidad para los botones de inicio de sesión y registro
 const loginButtons = document.querySelectorAll('.btn-outline, .btn-outline-light');
 loginButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -58,7 +58,7 @@ registerButtons.forEach(button => {
             // window.location.href = 'register.html';
         });
     }
-});
+});*/
 
 // Funcionalidad para los botones de detalles de libros
 const detailButtons = document.querySelectorAll('.book-card .btn-small');
