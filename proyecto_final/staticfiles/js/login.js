@@ -40,11 +40,11 @@ mobileLinks.forEach(link => {
 document.getElementById('currentYear').textContent = new Date().getFullYear();
 
 // Mostrar/ocultar contraseña
-const togglePasswordButtons = document.querySelectorAll('.toggle-password');
-togglePasswordButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const input = button.previousElementSibling;
-        const icon = button.querySelector('i');
+const togglePasswordButton = document.querySelector('.toggle-password');
+if (togglePasswordButton) {
+    togglePasswordButton.addEventListener('click', () => {
+        const input = togglePasswordButton.previousElementSibling;
+        const icon = togglePasswordButton.querySelector('i');
 
         if (input.type === 'password') {
             input.type = 'text';
@@ -56,30 +56,15 @@ togglePasswordButtons.forEach(button => {
             icon.classList.add('fa-eye');
         }
     });
-});
+}
 
 // Validación de formularios
-const registerForm = document.getElementById('registerForm');
+const loginForm = document.getElementById('loginForm');
 
 // Validación de correo electrónico
 function validateEmail(email) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
-}
-
-// Validación de contraseña
-function validatePassword(password) {
-    // Al menos 8 caracteres, una letra mayúscula y un número
-    const lengthValid = password.length >= 8;
-    const uppercaseValid = /[A-Z]/.test(password);
-    const numberValid = /[0-9]/.test(password);
-
-    return {
-        lengthValid,
-        uppercaseValid,
-        numberValid,
-        isValid: lengthValid && uppercaseValid && numberValid
-    };
 }
 
 // Mostrar mensaje de error
@@ -118,75 +103,14 @@ function clearError(input) {
     }
 }
 
-// Actualizar indicadores de requisitos de contraseña
-function updatePasswordRequirements(password) {
-    const validation = validatePassword(password);
-
-    // Actualizar indicador de longitud
-    const lengthCheck = document.getElementById('length-check');
-    if (validation.lengthValid) {
-        lengthCheck.classList.add('valid');
-        lengthCheck.querySelector('i').classList.remove('fa-circle');
-        lengthCheck.querySelector('i').classList.add('fa-check-circle');
-    } else {
-        lengthCheck.classList.remove('valid');
-        lengthCheck.querySelector('i').classList.remove('fa-check-circle');
-        lengthCheck.querySelector('i').classList.add('fa-circle');
-    }
-
-    // Actualizar indicador de mayúscula
-    const uppercaseCheck = document.getElementById('uppercase-check');
-    if (validation.uppercaseValid) {
-        uppercaseCheck.classList.add('valid');
-        uppercaseCheck.querySelector('i').classList.remove('fa-circle');
-        uppercaseCheck.querySelector('i').classList.add('fa-check-circle');
-    } else {
-        uppercaseCheck.classList.remove('valid');
-        uppercaseCheck.querySelector('i').classList.remove('fa-check-circle');
-        uppercaseCheck.querySelector('i').classList.add('fa-circle');
-    }
-
-    // Actualizar indicador de número
-    const numberCheck = document.getElementById('number-check');
-    if (validation.numberValid) {
-        numberCheck.classList.add('valid');
-        numberCheck.querySelector('i').classList.remove('fa-circle');
-        numberCheck.querySelector('i').classList.add('fa-check-circle');
-    } else {
-        numberCheck.classList.remove('valid');
-        numberCheck.querySelector('i').classList.remove('fa-check-circle');
-        numberCheck.querySelector('i').classList.add('fa-circle');
-    }
-}
-
-// Validación del formulario de registro
-if (registerForm) {
-    registerForm.addEventListener('submit', function(e) {
+// Validación del formulario de inicio de sesión
+if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
         let isValid = true;
-        const nombre = document.getElementById('nombre');
-        const apellido = document.getElementById('apellido');
         const email = document.getElementById('email');
         const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirm-password');
-        const terms = document.getElementById('terms');
-
-        // Validar nombre
-        if (nombre.value.length < 2) {
-            showError(nombre, 'El nombre debe tener al menos 2 caracteres');
-            isValid = false;
-        } else {
-            clearError(nombre);
-        }
-
-        // Validar apellido
-        if (apellido.value.length < 2) {
-            showError(apellido, 'El apellido debe tener al menos 2 caracteres');
-            isValid = false;
-        } else {
-            clearError(apellido);
-        }
 
         // Validar email
         if (!validateEmail(email.value)) {
@@ -197,41 +121,24 @@ if (registerForm) {
         }
 
         // Validar contraseña
-        const passwordValidation = validatePassword(password.value);
-        if (!passwordValidation.isValid) {
-            showError(password, 'La contraseña no cumple con los requisitos');
+        if (password.value.length < 1) {
+            showError(password, 'Por favor, ingresa tu contraseña');
             isValid = false;
         } else {
             clearError(password);
         }
 
-        // Validar confirmación de contraseña
-        if (password.value !== confirmPassword.value) {
-            showError(confirmPassword, 'Las contraseñas no coinciden');
-            isValid = false;
-        } else {
-            clearError(confirmPassword);
-        }
-
-        // Validar términos y condiciones
-        if (!terms.checked) {
-            showError(terms, 'Debes aceptar los términos y condiciones');
-            isValid = false;
-        } else {
-            clearError(terms);
-        }
-
         if (isValid) {
             // Animación de carga en el botón
-            const submitButton = registerForm.querySelector('button[type="submit"]');
+            const submitButton = loginForm.querySelector('button[type="submit"]');
             const originalText = submitButton.textContent;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando cuenta...';
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
             submitButton.disabled = true;
 
             // Simulación de envío del formulario
             setTimeout(() => {
                 // Aquí iría la lógica para enviar el formulario al servidor
-                alert('Registro exitoso');
+                alert('Inicio de sesión exitoso');
                 // Simulación de redirección
                 setTimeout(() => {
                     window.location.href = 'index.html';
@@ -254,21 +161,21 @@ inputs.forEach(input => {
                 showError(input, 'Por favor, ingresa un correo electrónico válido');
             }
         }
-
-        if (input.id === 'password' && input.value) {
-            updatePasswordRequirements(input.value);
-        }
-
-        if (input.id === 'confirm-password' && input.value) {
-            const password = document.getElementById('password');
-            if (password.value !== input.value) {
-                showError(input, 'Las contraseñas no coinciden');
-            }
-        }
     });
 });
 
-// Manejar los botones de registro con redes sociales
+// Manejar el enlace de contraseña olvidada
+const forgotPasswordLink = document.querySelector('.forgot-password');
+if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Funcionalidad de recuperación de contraseña');
+        // Aquí se podría redirigir a la página de recuperación de contraseña
+        // window.location.href = 'recuperar-contrasena.html';
+    });
+}
+
+// Manejar los botones de inicio de sesión con redes sociales
 const socialButtons = document.querySelectorAll('.social-btn');
 socialButtons.forEach(button => {
     button.addEventListener('click', function() {
@@ -281,8 +188,8 @@ socialButtons.forEach(button => {
 
         // Simulación de autenticación
         setTimeout(() => {
-            alert(`Registrándose con ${provider}`);
-            // Aquí iría la lógica para registro con redes sociales
+            alert(`Iniciando sesión con ${provider}`);
+            // Aquí iría la lógica para autenticación con redes sociales
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 500);
@@ -290,28 +197,17 @@ socialButtons.forEach(button => {
     });
 });
 
-// Manejar los enlaces de términos y condiciones
-const termsLinks = document.querySelectorAll('.terms-link');
-termsLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const type = this.textContent.includes('términos') ? 'términos y condiciones' : 'política de privacidad';
-        alert(`Mostrando ${type}`);
-        // Aquí se podría redirigir a la página correspondiente
-    });
-});
-
 // Añadir efectos visuales
 document.addEventListener('DOMContentLoaded', function() {
     // Animación de entrada para el formulario
-    const registerCard = document.querySelector('.register-card');
-    registerCard.style.opacity = '0';
-    registerCard.style.transform = 'translateY(20px)';
+    const loginCard = document.querySelector('.login-card');
+    loginCard.style.opacity = '0';
+    loginCard.style.transform = 'translateY(20px)';
 
     setTimeout(() => {
-        registerCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        registerCard.style.opacity = '1';
-        registerCard.style.transform = 'translateY(0)';
+        loginCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        loginCard.style.opacity = '1';
+        loginCard.style.transform = 'translateY(0)';
     }, 100);
 
     // Efecto de focus en los inputs
@@ -326,7 +222,4 @@ document.addEventListener('DOMContentLoaded', function() {
             this.parentElement.style.transform = 'scale(1)';
         });
     });
-
-    // Inicializar los indicadores de requisitos de contraseña
-    updatePasswordRequirements('');
 });

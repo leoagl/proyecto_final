@@ -113,7 +113,7 @@
 
                 <div class="register-link">
                     <p>¿No tienes una cuenta?</p>
-                    <a href="registro.html" class="btn btn-outline">Crear cuenta</a>
+                    <a href="{% url 'registro' %}" class="btn btn-outline">Crear cuenta</a>
                 </div>
             </div>
         </div>
@@ -136,6 +136,6 @@
         </div>
     </footer>
 
-    <script src="{% static 'js/script.js' %}" ></script>
+    <script src="{% static 'usuarios/js/login.js' %}" ></script>
 </body>
 </html>

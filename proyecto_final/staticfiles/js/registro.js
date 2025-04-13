@@ -70,16 +70,8 @@ function validateEmail(email) {
 // Validación de contraseña
 function validatePassword(password) {
     // Al menos 8 caracteres, una letra mayúscula y un número
-    const lengthValid = password.length >= 8;
-    const uppercaseValid = /[A-Z]/.test(password);
-    const numberValid = /[0-9]/.test(password);
-
-    return {
-        lengthValid,
-        uppercaseValid,
-        numberValid,
-        isValid: lengthValid && uppercaseValid && numberValid
-    };
+    const re = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return re.test(password);
 }
 
 // Mostrar mensaje de error
@@ -88,14 +80,12 @@ function showError(input, message) {
     if (errorElement && errorElement.classList.contains('error-message')) {
         errorElement.textContent = message;
         input.classList.add('error');
-        input.style.borderColor = '#ef4444';
     } else {
         const formGroup = input.closest('.form-group');
         const errorMsg = formGroup.querySelector('.error-message');
         if (errorMsg) {
             errorMsg.textContent = message;
             input.classList.add('error');
-            input.style.borderColor = '#ef4444';
         }
     }
 }
@@ -106,56 +96,13 @@ function clearError(input) {
     if (errorElement && errorElement.classList.contains('error-message')) {
         errorElement.textContent = '';
         input.classList.remove('error');
-        input.style.borderColor = '#d1d5db';
     } else {
         const formGroup = input.closest('.form-group');
         const errorMsg = formGroup.querySelector('.error-message');
         if (errorMsg) {
             errorMsg.textContent = '';
             input.classList.remove('error');
-            input.style.borderColor = '#d1d5db';
         }
-    }
-}
-
-// Actualizar indicadores de requisitos de contraseña
-function updatePasswordRequirements(password) {
-    const validation = validatePassword(password);
-
-    // Actualizar indicador de longitud
-    const lengthCheck = document.getElementById('length-check');
-    if (validation.lengthValid) {
-        lengthCheck.classList.add('valid');
-        lengthCheck.querySelector('i').classList.remove('fa-circle');
-        lengthCheck.querySelector('i').classList.add('fa-check-circle');
-    } else {
-        lengthCheck.classList.remove('valid');
-        lengthCheck.querySelector('i').classList.remove('fa-check-circle');
-        lengthCheck.querySelector('i').classList.add('fa-circle');
-    }
-
-    // Actualizar indicador de mayúscula
-    const uppercaseCheck = document.getElementById('uppercase-check');
-    if (validation.uppercaseValid) {
-        uppercaseCheck.classList.add('valid');
-        uppercaseCheck.querySelector('i').classList.remove('fa-circle');
-        uppercaseCheck.querySelector('i').classList.add('fa-check-circle');
-    } else {
-        uppercaseCheck.classList.remove('valid');
-        uppercaseCheck.querySelector('i').classList.remove('fa-check-circle');
-        uppercaseCheck.querySelector('i').classList.add('fa-circle');
-    }
-
-    // Actualizar indicador de número
-    const numberCheck = document.getElementById('number-check');
-    if (validation.numberValid) {
-        numberCheck.classList.add('valid');
-        numberCheck.querySelector('i').classList.remove('fa-circle');
-        numberCheck.querySelector('i').classList.add('fa-check-circle');
-    } else {
-        numberCheck.classList.remove('valid');
-        numberCheck.querySelector('i').classList.remove('fa-check-circle');
-        numberCheck.querySelector('i').classList.add('fa-circle');
     }
 }
 
@@ -165,27 +112,27 @@ if (registerForm) {
         e.preventDefault();
 
         let isValid = true;
-        const nombre = document.getElementById('nombre');
-        const apellido = document.getElementById('apellido');
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirm-password');
+        const firstName = document.getElementById('register-firstname');
+        const lastName = document.getElementById('register-lastname');
+        const email = document.getElementById('register-email');
+        const password = document.getElementById('register-password');
+        const confirmPassword = document.getElementById('register-confirm-password');
         const terms = document.getElementById('terms');
 
         // Validar nombre
-        if (nombre.value.length < 2) {
-            showError(nombre, 'El nombre debe tener al menos 2 caracteres');
+        if (firstName.value.length < 2) {
+            showError(firstName, 'El nombre debe tener al menos 2 caracteres');
             isValid = false;
         } else {
-            clearError(nombre);
+            clearError(firstName);
         }
 
         // Validar apellido
-        if (apellido.value.length < 2) {
-            showError(apellido, 'El apellido debe tener al menos 2 caracteres');
+        if (lastName.value.length < 2) {
+            showError(lastName, 'El apellido debe tener al menos 2 caracteres');
             isValid = false;
         } else {
-            clearError(apellido);
+            clearError(lastName);
         }
 
         // Validar email
@@ -197,9 +144,8 @@ if (registerForm) {
         }
 
         // Validar contraseña
-        const passwordValidation = validatePassword(password.value);
-        if (!passwordValidation.isValid) {
-            showError(password, 'La contraseña no cumple con los requisitos');
+        if (!validatePassword(password.value)) {
+            showError(password, 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un número');
             isValid = false;
         } else {
             clearError(password);
@@ -222,21 +168,12 @@ if (registerForm) {
         }
 
         if (isValid) {
-            // Animación de carga en el botón
-            const submitButton = registerForm.querySelector('button[type="submit"]');
-            const originalText = submitButton.textContent;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando cuenta...';
-            submitButton.disabled = true;
-
-            // Simulación de envío del formulario
+            // Aquí iría la lógica para enviar el formulario al servidor
+            alert('Registro exitoso');
+            // Simulación de redirección
             setTimeout(() => {
-                // Aquí iría la lógica para enviar el formulario al servidor
-                alert('Registro exitoso');
-                // Simulación de redirección
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 500);
-            }, 1500);
+                window.location.href = 'index.html';
+            }, 1000);
         }
     });
 }
@@ -255,12 +192,14 @@ inputs.forEach(input => {
             }
         }
 
-        if (input.id === 'password' && input.value) {
-            updatePasswordRequirements(input.value);
+        if (input.id === 'register-password' && input.value) {
+            if (!validatePassword(input.value)) {
+                showError(input, 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un número');
+            }
         }
 
-        if (input.id === 'confirm-password' && input.value) {
-            const password = document.getElementById('password');
+        if (input.id === 'register-confirm-password' && input.value) {
+            const password = document.getElementById('register-password');
             if (password.value !== input.value) {
                 showError(input, 'Las contraseñas no coinciden');
             }
@@ -273,20 +212,8 @@ const socialButtons = document.querySelectorAll('.social-btn');
 socialButtons.forEach(button => {
     button.addEventListener('click', function() {
         const provider = this.classList.contains('google') ? 'Google' : 'Facebook';
-
-        // Animación de carga en el botón
-        const originalHTML = this.innerHTML;
-        this.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Conectando con ${provider}...`;
-        this.disabled = true;
-
-        // Simulación de autenticación
-        setTimeout(() => {
-            alert(`Registrándose con ${provider}`);
-            // Aquí iría la lógica para registro con redes sociales
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 500);
-        }, 1500);
+        alert(`Registrándose con ${provider}`);
+        // Aquí iría la lógica para registro con redes sociales
     });
 });
 
@@ -299,34 +226,4 @@ termsLinks.forEach(link => {
         alert(`Mostrando ${type}`);
         // Aquí se podría redirigir a la página correspondiente
     });
-});
-
-// Añadir efectos visuales
-document.addEventListener('DOMContentLoaded', function() {
-    // Animación de entrada para el formulario
-    const registerCard = document.querySelector('.register-card');
-    registerCard.style.opacity = '0';
-    registerCard.style.transform = 'translateY(20px)';
-
-    setTimeout(() => {
-        registerCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        registerCard.style.opacity = '1';
-        registerCard.style.transform = 'translateY(0)';
-    }, 100);
-
-    // Efecto de focus en los inputs
-    const formInputs = document.querySelectorAll('input');
-    formInputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement.style.transition = 'transform 0.3s ease';
-            this.parentElement.style.transform = 'scale(1.02)';
-        });
-
-        input.addEventListener('blur', function() {
-            this.parentElement.style.transform = 'scale(1)';
-        });
-    });
-
-    // Inicializar los indicadores de requisitos de contraseña
-    updatePasswordRequirements('');
 });
