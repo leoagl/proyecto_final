@@ -31,7 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
-
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Debe estar presente
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -46,6 +48,8 @@ INSTALLED_APPS = [
     'resenas',
     'recomendaciones',
     'rest_framework',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
 ]
 
 MIDDLEWARE = [
@@ -54,8 +58,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'usuarios.middleware.ForzarMFAAdminMiddleware',
 ]
 
 ROOT_URLCONF = 'proyecto_final.urls'

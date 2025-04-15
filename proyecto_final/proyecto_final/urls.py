@@ -15,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView
 from django.urls import path,include
 
 from p_final.views import inicio
@@ -22,6 +23,6 @@ from p_final.views import inicio
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('inicio/', inicio, name='inicio'),
-    path('usuarios/', include('usuarios.urls')),  # ← Aquí incluimos las URLs de la app de usuarios
-
+    path('usuarios/', include('usuarios.urls')),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]
