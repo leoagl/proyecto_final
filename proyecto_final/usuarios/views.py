@@ -6,6 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 import qrcode
 import base64
+from .models import Usuario
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.hashers import make_password  # Importa make_password
 
 # Create your views here.
 
@@ -70,3 +75,65 @@ def verificar_mfa(request):
     return render(request, 'usuarios/verificar_mfa.html', {
         'qr_base64': request.session.get('mfa_qr')  # Pasar QR a la plantilla
     })
+
+def registro_usuario(request):
+    print("Vista registro_usuario llamada")  # Depuración
+    if request.method == 'POST':
+        print("Método POST recibido")  # Depuración
+        username = request.POST.get('username')
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        correo_electronico = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm-password')
+
+        print(f"Nombre: {nombre}, Apellido: {apellido}, Email: {correo_electronico}") #Depuración
+
+        if password == confirm_password:
+            try:
+                usuario = Usuario.objects.create_user(
+                    username=username,
+                    correo_electronico=correo_electronico,
+                    first_name=nombre,
+                    last_name=apellido,
+                    password=password,
+                    rol='usuario',
+                )
+                print("Usuario creado correctamente")  # Depuración
+
+                try:
+                    group = Group.objects.get(name='usuario')
+                    usuario.groups.add(group)
+                    print("Usuario agregado al grupo 'usuario'")  # Depuración
+                    return redirect('inicio')
+                except Group.DoesNotExist:
+                    print("Error: Grupo 'usuario' no encontrado")  # Depuración
+                    return render(request, 'usuarios/registro.html', {'error_message': "Grupo 'usuario' no encontrado"})
+
+            except Exception as e:
+                error_message = f"Error al crear usuario: {e}"
+                print(f"Error al crear usuario: {error_message}") #Depuración
+                return render(request, 'usuarios/registro.html', {'error_message': error_message})
+        else:
+            print("Contraseñas no coinciden") #Depuración
+            error_message = "Las contraseñas no coinciden"
+            return render(request, 'usuarios/registro.html', {'error_message': error_message})
+    else:
+        print("Método GET") #Depuración
+    return render(request, 'usuarios/registro.html')
+
+
+def iniciar_sesion(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('inicio')
+        else:
+            messages.error(request, 'Usuario o contraseña incorrectos.')
+
+    return render(request, 'login.html')

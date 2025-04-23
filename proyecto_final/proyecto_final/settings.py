@@ -140,3 +140,8 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+GOOGLE_BOOKS_API_KEY = 'AIzaSyB2PBsQI-0zKlXPaTB5vifHPY17M9QILio'
+

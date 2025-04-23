@@ -6,14 +6,12 @@ let menuOpen = false;
 menuToggle.addEventListener('click', () => {
     if (menuOpen) {
         mobileMenu.style.display = 'none';
-        // Restaurar las barras del menú
         const spans = menuToggle.querySelectorAll('span');
         spans[0].style.transform = 'none';
         spans[1].style.opacity = '1';
         spans[2].style.transform = 'none';
     } else {
         mobileMenu.style.display = 'block';
-        // Animar las barras del menú a una X
         const spans = menuToggle.querySelectorAll('span');
         spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
         spans[1].style.opacity = '0';
@@ -22,13 +20,11 @@ menuToggle.addEventListener('click', () => {
     menuOpen = !menuOpen;
 });
 
-// Cerrar el menú móvil cuando se hace clic en un enlace
 const mobileLinks = mobileMenu.querySelectorAll('a');
 mobileLinks.forEach(link => {
     link.addEventListener('click', () => {
         mobileMenu.style.display = 'none';
         menuOpen = false;
-        // Restaurar las barras del menú
         const spans = menuToggle.querySelectorAll('span');
         spans[0].style.transform = 'none';
         spans[1].style.opacity = '1';
@@ -36,10 +32,8 @@ mobileLinks.forEach(link => {
     });
 });
 
-// Actualizar el año actual en el footer
 document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-// Mostrar/ocultar contraseña
 const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 togglePasswordButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -58,18 +52,14 @@ togglePasswordButtons.forEach(button => {
     });
 });
 
-// Validación de formularios
 const registerForm = document.getElementById('registerForm');
 
-// Validación de correo electrónico
 function validateEmail(email) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
 }
 
-// Validación de contraseña
 function validatePassword(password) {
-    // Al menos 8 caracteres, una letra mayúscula y un número
     const lengthValid = password.length >= 8;
     const uppercaseValid = /[A-Z]/.test(password);
     const numberValid = /[0-9]/.test(password);
@@ -82,7 +72,6 @@ function validatePassword(password) {
     };
 }
 
-// Mostrar mensaje de error
 function showError(input, message) {
     const errorElement = input.parentElement.nextElementSibling;
     if (errorElement && errorElement.classList.contains('error-message')) {
@@ -100,7 +89,6 @@ function showError(input, message) {
     }
 }
 
-// Limpiar mensaje de error
 function clearError(input) {
     const errorElement = input.parentElement.nextElementSibling;
     if (errorElement && errorElement.classList.contains('error-message')) {
@@ -118,11 +106,9 @@ function clearError(input) {
     }
 }
 
-// Actualizar indicadores de requisitos de contraseña
 function updatePasswordRequirements(password) {
     const validation = validatePassword(password);
 
-    // Actualizar indicador de longitud
     const lengthCheck = document.getElementById('length-check');
     if (validation.lengthValid) {
         lengthCheck.classList.add('valid');
@@ -134,7 +120,6 @@ function updatePasswordRequirements(password) {
         lengthCheck.querySelector('i').classList.add('fa-circle');
     }
 
-    // Actualizar indicador de mayúscula
     const uppercaseCheck = document.getElementById('uppercase-check');
     if (validation.uppercaseValid) {
         uppercaseCheck.classList.add('valid');
@@ -146,7 +131,6 @@ function updatePasswordRequirements(password) {
         uppercaseCheck.querySelector('i').classList.add('fa-circle');
     }
 
-    // Actualizar indicador de número
     const numberCheck = document.getElementById('number-check');
     if (validation.numberValid) {
         numberCheck.classList.add('valid');
@@ -159,11 +143,8 @@ function updatePasswordRequirements(password) {
     }
 }
 
-// Validación del formulario de registro
 if (registerForm) {
     registerForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
         let isValid = true;
         const nombre = document.getElementById('nombre');
         const apellido = document.getElementById('apellido');
@@ -172,7 +153,6 @@ if (registerForm) {
         const confirmPassword = document.getElementById('confirm-password');
         const terms = document.getElementById('terms');
 
-        // Validar nombre
         if (nombre.value.length < 2) {
             showError(nombre, 'El nombre debe tener al menos 2 caracteres');
             isValid = false;
@@ -180,7 +160,6 @@ if (registerForm) {
             clearError(nombre);
         }
 
-        // Validar apellido
         if (apellido.value.length < 2) {
             showError(apellido, 'El apellido debe tener al menos 2 caracteres');
             isValid = false;
@@ -188,7 +167,6 @@ if (registerForm) {
             clearError(apellido);
         }
 
-        // Validar email
         if (!validateEmail(email.value)) {
             showError(email, 'Por favor, ingresa un correo electrónico válido');
             isValid = false;
@@ -196,7 +174,6 @@ if (registerForm) {
             clearError(email);
         }
 
-        // Validar contraseña
         const passwordValidation = validatePassword(password.value);
         if (!passwordValidation.isValid) {
             showError(password, 'La contraseña no cumple con los requisitos');
@@ -205,7 +182,6 @@ if (registerForm) {
             clearError(password);
         }
 
-        // Validar confirmación de contraseña
         if (password.value !== confirmPassword.value) {
             showError(confirmPassword, 'Las contraseñas no coinciden');
             isValid = false;
@@ -213,7 +189,6 @@ if (registerForm) {
             clearError(confirmPassword);
         }
 
-        // Validar términos y condiciones
         if (!terms.checked) {
             showError(terms, 'Debes aceptar los términos y condiciones');
             isValid = false;
@@ -221,34 +196,17 @@ if (registerForm) {
             clearError(terms);
         }
 
-        if (isValid) {
-            // Animación de carga en el botón
-            const submitButton = registerForm.querySelector('button[type="submit"]');
-            const originalText = submitButton.textContent;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando cuenta...';
-            submitButton.disabled = true;
-
-            // Simulación de envío del formulario
-            setTimeout(() => {
-                // Aquí iría la lógica para enviar el formulario al servidor
-                alert('Registro exitoso');
-                // Simulación de redirección
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 500);
-            }, 1500);
+        if (!isValid) {
+            e.preventDefault(); //Previene el submit si no es valido.
         }
     });
 }
 
-// Validación en tiempo real
 const inputs = document.querySelectorAll('input');
 inputs.forEach(input => {
     input.addEventListener('input', function() {
-        // Limpiar errores al escribir
         clearError(input);
 
-        // Validación específica para cada tipo de input
         if (input.type === 'email' && input.value) {
             if (!validateEmail(input.value)) {
                 showError(input, 'Por favor, ingresa un correo electrónico válido');
@@ -268,42 +226,7 @@ inputs.forEach(input => {
     });
 });
 
-// Manejar los botones de registro con redes sociales
-const socialButtons = document.querySelectorAll('.social-btn');
-socialButtons.forEach(button => {
-    button.addEventListener('click', function() {
-        const provider = this.classList.contains('google') ? 'Google' : 'Facebook';
-
-        // Animación de carga en el botón
-        const originalHTML = this.innerHTML;
-        this.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Conectando con ${provider}...`;
-        this.disabled = true;
-
-        // Simulación de autenticación
-        setTimeout(() => {
-            alert(`Registrándose con ${provider}`);
-            // Aquí iría la lógica para registro con redes sociales
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 500);
-        }, 1500);
-    });
-});
-
-// Manejar los enlaces de términos y condiciones
-const termsLinks = document.querySelectorAll('.terms-link');
-termsLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const type = this.textContent.includes('términos') ? 'términos y condiciones' : 'política de privacidad';
-        alert(`Mostrando ${type}`);
-        // Aquí se podría redirigir a la página correspondiente
-    });
-});
-
-// Añadir efectos visuales
 document.addEventListener('DOMContentLoaded', function() {
-    // Animación de entrada para el formulario
     const registerCard = document.querySelector('.register-card');
     registerCard.style.opacity = '0';
     registerCard.style.transform = 'translateY(20px)';
@@ -314,7 +237,6 @@ document.addEventListener('DOMContentLoaded', function() {
         registerCard.style.transform = 'translateY(0)';
     }, 100);
 
-    // Efecto de focus en los inputs
     const formInputs = document.querySelectorAll('input');
     formInputs.forEach(input => {
         input.addEventListener('focus', function() {
@@ -327,6 +249,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Inicializar los indicadores de requisitos de contraseña
     updatePasswordRequirements('');
 });

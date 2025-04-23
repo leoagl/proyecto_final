@@ -191,7 +191,7 @@ socialButtons.forEach(button => {
             alert(`Iniciando sesión con ${provider}`);
             // Aquí iría la lógica para autenticación con redes sociales
             setTimeout(() => {
-                window.location.href = 'index.html';
+                window.location.href = '/inicio/';
             }, 500);
         }, 1500);
     });

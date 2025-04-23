@@ -21,15 +21,14 @@
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="{% url 'inicio' %}">Inicio</a></li>
                     <li><a href="#">Catálogo</a></li>
                     <li><a href="#">Colecciones</a></li>
-                    <li><a href="#">Sobre Nosotros</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons">
-                <a href="login.html" class="btn btn-outline active">Iniciar Sesión</a>
-                <a href="registro.html" class="btn btn-primary">Registrarse</a>
+                <a href="{% url 'login' %}" class="btn btn-outline active">Iniciar Sesión</a>
+                <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
             </div>
             <button class="menu-toggle" id="menuToggle">
                 <span></span>
@@ -42,13 +41,12 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <ul>
-            <li><a href="index.html">Inicio</a></li>
+            <li><a href="{% url 'inicio' %}">Inicio</a></li>
             <li><a href="#">Catálogo</a></li>
             <li><a href="#">Colecciones</a></li>
-            <li><a href="#">Sobre Nosotros</a></li>
             <li class="mobile-auth">
-                <a href="login.html" class="btn btn-outline active">Iniciar Sesión</a>
-                <a href="registro.html" class="btn btn-primary">Registrarse</a>
+                <a href="{% url 'login' %}" class="btn btn-outline active">Iniciar Sesión</a>
+                <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
             </li>
         </ul>
     </div>
@@ -64,7 +62,8 @@
                     <p>Ingresa tus credenciales para acceder a tu cuenta</p>
                 </div>
 
-                <form id="loginForm" class="login-form">
+                <form id="loginForm" class="login-form" method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
                     <div class="form-group">
                         <label for="email">Correo electrónico</label>
                         <div class="input-with-icon">

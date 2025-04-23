@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import mark_safe
 
 class Genero(models.Model):
     nombre_genero = models.CharField(max_length=100)
@@ -14,6 +15,16 @@ class Libro(models.Model):
     ISBN = models.CharField(max_length=13, unique=True)
     disponibilidad = models.BooleanField(default=True)
     genero = models.ForeignKey(Genero, on_delete=models.CASCADE)
+    existencias = models.PositiveIntegerField(default=1)
+    portada = models.ImageField(upload_to='portadas/', null=True, blank=True)
+
+    def portada_preview(self):
+        if self.portada:
+            return mark_safe(
+                f'<img src="{self.portada.url}" width="120" height="160" style="object-fit: contain; border: 1px solid #ccc;" />')
+        return "(Sin portada)"
+
+    portada_preview.short_description = "Vista previa"
 
     def __str__(self):
         return self.titulo
