@@ -19,7 +19,7 @@
                 <ul>
                     <li><a href="{% url 'inicio' %}" {% if request.path == '/inicio/' %}class="active"{% endif %}>Inicio</a></li>
                     <li><a href="#">Catálogo</a></li>
-                    <li><a href="#">Colecciones</a></li>
+                    <li><a href="#">prestamo</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons">
@@ -38,7 +38,7 @@
         <ul>
             <li><a href="{% url 'inicio' %}" {% if request.path == '/inicio/' %}class="active"{% endif %}>Inicio</a></li>
             <li><a href="#">Catálogo</a></li>
-            <li><a href="#">Colecciones</a></li>
+            <li><a href="#">prestamo</a></li>
             <li class="mobile-auth">
                 <a href="{% url 'login' %}" class="btn btn-outline">Iniciar Sesión</a>
                 <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
