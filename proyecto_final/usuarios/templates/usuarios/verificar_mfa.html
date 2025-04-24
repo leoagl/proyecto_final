@@ -1,0 +1,16 @@
+{% if qr_base64 %}
+  <div class="text-center">
+    <p>Escanee este código QR con su aplicación de autenticación:</p>
+    <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code">
+  </div>
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+  <input type="text" name="otp" placeholder="Ingrese su código OTP" required>
+  <button type="submit">Verificar</button>
+</form>
+
+{% if error %}
+  <p style="color: red;">{{ error }}</p>
+{% endif %}

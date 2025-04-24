@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Autenticación</title>
+</head>
+<body>
+<h2>Configura tu autenticación en dos pasos</h2>
+
+{% if qr_base64 %}
+    <p>Escanea este código QR con tu app de autenticación (como Google Authenticator):</p>
+    <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code">
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <label for="otp">Código de 6 dígitos:</label>
+    <input type="text" name="otp" required>
+    <button type="submit">Verificar</button>
+</form>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+</body>
+</html>
