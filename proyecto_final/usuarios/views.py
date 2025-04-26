@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 import qrcode
 import base64
 from .models import Usuario
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.hashers import make_password  # Importa make_password
@@ -123,17 +123,25 @@ def registro_usuario(request):
     return render(request, 'usuarios/registro.html')
 
 
-def iniciar_sesion(request):
+def login_usuario(request):
+    print("Vista iniciar_sesion llamada")  # Depuración
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        print("Método POST recibido")  # Depuración
+        username = request.POST.get('username') # Obtener el username del campo 'username'
+        password = request.POST.get('password')
+
+        print(f"Username: {username}")  # Depuración
 
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
+            print(f"Usuario {username} autenticado y logueado.")  # Depuración
             return redirect('inicio')
         else:
+            print("Error de autenticación: Usuario o contraseña incorrectos.")  # Depuración
             messages.error(request, 'Usuario o contraseña incorrectos.')
-
-    return render(request, 'login.html')
+            return render(request, 'inicio_sesion.html', {'error_message': 'Usuario o contraseña incorrectos.'})
+    else:
+        print("Método GET")  # Depuración
+    return render(request, 'inicio_sesion.html')

@@ -141,7 +141,7 @@ if (loginForm) {
                 alert('Inicio de sesión exitoso');
                 // Simulación de redirección
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    window.location.href = '/inicio/';
                 }, 500);
             }, 1500);
         }

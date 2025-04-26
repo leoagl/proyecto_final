@@ -21,12 +21,20 @@
                 <ul>
                     <li><a href="#" class="active">Inicio</a></li>
                     <li><a href="#">Catálogo</a></li>
-                    <li><a href="#">Colecciones</a></li>
+                    <li><a href="#">Prestamos</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons">
-                <a href="{% url 'login' %}" class="btn btn-outline">Iniciar Sesión</a>
+            {% if request.user.is_authenticated %}
+                <span class="welcome-msg">Bienvenido {{ request.user.username }}</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline active">Iniciar Sesión</a>
                 <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
+            {% endif %}
             </div>
             <button class="menu-toggle" id="menuToggle">
                 <span></span>
@@ -41,10 +49,18 @@
         <ul>
             <li><a href="#" class="active">Inicio</a></li>
             <li><a href="#">Catálogo</a></li>
-            <li><a href="#">Colecciones</a></li>
+            <li><a href="#">Prestamos</a></li>
             <li class="mobile-auth">
-                <a href="{% url 'login' %}" class="btn btn-outline">Iniciar Sesión</a>
-                <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
+                {% if request.user.is_authenticated %}
+                    <span class="welcome-msg">Bienvenido {{ request.user.username }}</span><br>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline active">Iniciar Sesión</a>
+                    <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
+                {% endif %}
             </li>
         </ul>
     </div>
