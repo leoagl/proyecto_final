@@ -19,8 +19,8 @@
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="#" class="active">Inicio</a></li>
-                    <li><a href="#">Catálogo</a></li>
+                    <li><a href="{% url 'inicio' %}" class="active">Inicio</a></li>
+                    <li><a href="{% url 'catalogo' %}">Catálogo</a></li>
                     <li><a href="#">Prestamos</a></li>
                 </ul>
             </nav>
@@ -47,8 +47,8 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <ul>
-            <li><a href="#" class="active">Inicio</a></li>
-            <li><a href="#">Catálogo</a></li>
+            <li><a href="{% url 'inicio' %}" class="active">Inicio</a></li>
+            <li><a href="{% url 'catalogo' %}">Catálogo</a></li>
             <li><a href="#">Prestamos</a></li>
             <li class="mobile-auth">
                 {% if request.user.is_authenticated %}

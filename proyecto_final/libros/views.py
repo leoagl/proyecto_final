@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.conf import settings
+from django.shortcuts import render
 import requests
 from urllib.parse import quote
 
@@ -36,3 +37,6 @@ def buscar_libro_googlebooks(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+def catalogo(request):
+    return render(request, 'catalogo.html')

@@ -1,11 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo de Libros - BiblioVirtual</title>
-    <!-- Un solo archivo CSS -->
-    <link rel="stylesheet" href="catalogo.css">
+    <link rel="stylesheet" href="{% static 'css/catalogo.css' %}">
     <!-- Fuente de Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome para iconos -->
@@ -21,10 +21,9 @@
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="catalogo.html" class="active">Catálogo</a></li>
-                    <li><a href="#">Colecciones</a></li>
-                    <li><a href="#">Sobre Nosotros</a></li>
+                    <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                    <li><a href="{% url 'catalogo' %}" class="active">Catálogo</a></li>
+                    <li><a href="#">Prestamos</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons">
@@ -42,10 +41,9 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <ul>
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="catalogo.html" class="active">Catálogo</a></li>
-            <li><a href="#">Colecciones</a></li>
-            <li><a href="#">Sobre Nosotros</a></li>
+            <li><a href="{% url 'inicio' %}">Inicio</a></li>
+            <li><a href="{% url 'catalogo' %}" class="active">Catálogo</a></li>
+            <li><a href="#">Prestamos</a></li>
             <li class="mobile-auth">
                 <a href="login.html" class="btn btn-outline">Iniciar Sesión</a>
                 <a href="registro.html" class="btn btn-primary">Registrarse</a>
@@ -789,7 +787,6 @@
         </div>
     </footer>
 
-    <!-- Solo un archivo JavaScript -->
-    <script src="catalogo.js"></script>
+    <script src="static 'js/catalogo.js'"></script>
 </body>
 </html>
