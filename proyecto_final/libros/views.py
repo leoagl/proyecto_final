@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.conf import settings
 from django.shortcuts import render
+from .models import Libro, Genero
 import requests
 from urllib.parse import quote
 
@@ -40,3 +41,41 @@ def buscar_libro_googlebooks(request):
 
 def catalogo(request):
     return render(request, 'catalogo.html')
+
+def catalogo(request):
+    libros = Libro.objects.all()  # Trae todos los libros
+    # Filtros avanzados
+    categoria = request.GET.get('categoria')
+    autor = request.GET.get('autor')
+    anio = request.GET.get('anio')
+    disponibilidad = request.GET.get('disponibilidad')
+    calificacion = request.GET.get('calificacion')  # Futuro
+
+    if categoria:
+        libros = libros.filter(genero_id=categoria)
+
+    if autor:
+        libros = libros.filter(autor__icontains=autor)
+
+    if anio:
+        libros = libros.filter(año_publicacion=anio)
+
+    if disponibilidad:
+        if disponibilidad == 'disponible':
+            libros = libros.filter(disponibilidad=True)
+        elif disponibilidad == 'no_disponible':
+            libros = libros.filter(disponibilidad=False)
+
+    # La parte de calificación la dejaremos lista para después
+    # if calificacion:
+    #     libros = libros.filter(calificacion__gte=calificacion)
+
+    total_resultados = libros.count()
+
+    generos = Genero.objects.all()  # Para el filtro de categorías
+
+    return render(request, 'libros/catalogo.html', {
+        'libros': libros,
+        'total_resultados': total_resultados,
+        'generos': generos,
+    })

@@ -1,0 +1,759 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Préstamos - BiblioVirtual</title>
+    <link rel="stylesheet" href="{% static 'css/prestamos.css' %}">
+    <!-- Fuente de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="https://via.placeholder.com/40/10b981/FFFFFF?text=B" alt="Logo BiblioVirtual">
+                <h1>BiblioVirtual</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                    <li><a href="{% url 'catalogo' %}">Catálogo</a></li>
+                    <li><a href="{% url 'prestamos' %}" class="active">Mis Préstamos</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <div class="user-menu">
+                    <button class="user-menu-btn">
+                        <img src="https://via.placeholder.com/32/10b981/FFFFFF?text=U" alt="Usuario" class="user-avatar">
+                        <span>Ana García</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown">
+                        <a href="#"><i class="fas fa-user"></i> Mi Perfil</a>
+                        <a href="#"><i class="fas fa-heart"></i> Favoritos</a>
+                        <a href="#"><i class="fas fa-history"></i> Historial</a>
+                        <a href="#"><i class="fas fa-cog"></i> Configuración</a>
+                        <a href="login.html" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="catalogo.html">Catálogo</a></li>
+            <li><a href="prestamos.html" class="active">Mis Préstamos</a></li>
+            <li><a href="#">Colecciones</a></li>
+            <li class="mobile-user">
+                <img src="https://via.placeholder.com/32/10b981/FFFFFF?text=U" alt="Usuario" class="user-avatar">
+                <span>Ana García</span>
+            </li>
+            <li><a href="#"><i class="fas fa-user"></i> Mi Perfil</a></li>
+            <li><a href="#"><i class="fas fa-heart"></i> Favoritos</a></li>
+            <li><a href="#"><i class="fas fa-history"></i> Historial</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="login.html" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+        </ul>
+    </div>
+
+    <main>
+        {% if user.is_authenticated %}
+        <div class="loans-container">
+            <div class="container">
+                <div class="loans-header">
+                    <h2>Mis Préstamos</h2>
+                    <p>Gestiona tus libros prestados y fechas de vencimiento</p>
+                    <button class="btn btn-primary new-loan-btn" id="newLoanBtn">
+                        <i class="fas fa-plus"></i>
+                        Solicitar Nuevo Préstamo
+                    </button>
+                </div>
+
+                <div class="loans-tabs">
+                    <button class="tab-btn active" data-tab="current">
+                        <i class="fas fa-book"></i>
+                        Préstamos Actuales
+                        <span class="count">4</span>
+                    </button>
+                    <button class="tab-btn" data-tab="history">
+                        <i class="fas fa-history"></i>
+                        Historial
+                        <span class="count">12</span>
+                    </button>
+                    <button class="tab-btn" data-tab="reserved">
+                        <i class="fas fa-clock"></i>
+                        Reservados
+                        <span class="count">2</span>
+                    </button>
+                </div>
+
+                <div class="loans-content">
+                    <!-- Filtros y búsqueda -->
+                    <div class="loans-filters">
+                        <div class="search-box">
+                            <input type="text" id="searchLoans" placeholder="Buscar por título o autor...">
+                            <button class="search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="filter-options">
+                            <select id="statusFilter">
+                                <option value="all">Todos los estados</option>
+                                <option value="ontime">Al día</option>
+                                <option value="soon">Próximos a vencer</option>
+                                <option value="overdue">Vencidos</option>
+                            </select>
+                            <select id="sortLoans">
+                                <option value="duedate-asc">Fecha de vencimiento (próximos)</option>
+                                <option value="duedate-desc">Fecha de vencimiento (lejanos)</option>
+                                <option value="title-asc">Título (A-Z)</option>
+                                <option value="title-desc">Título (Z-A)</option>
+                                <option value="loandate-desc">Más recientes</option>
+                                <option value="loandate-asc">Más antiguos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Préstamos Actuales -->
+                    <div class="tab-content active" id="current-tab">
+                        <div class="loans-summary">
+                            <div class="summary-card">
+                                <div class="summary-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="summary-info">
+                                    <h3>4</h3>
+                                    <p>Préstamos Activos</p>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-icon warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="summary-info">
+                                    <h3>1</h3>
+                                    <p>Próximos a Vencer</p>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-icon danger">
+                                    <i class="fas fa-times-circle"></i>
+                                </div>
+                                <div class="summary-info">
+                                    <h3>1</h3>
+                                    <p>Vencidos</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="loans-list">
+                            <!-- Préstamo 1 (Vencido) -->
+                            <div class="loan-card overdue">
+                                <div class="loan-status">
+                                    <span class="status-badge">Vencido</span>
+                                    <span class="overdue-days">3 días</span>
+                                </div>
+                                <div class="loan-book">
+                                    <img src="https://via.placeholder.com/120x180/ef4444/FFFFFF?text=1984" alt="1984">
+                                    <div class="loan-book-info">
+                                        <h3>1984</h3>
+                                        <p class="book-author">George Orwell</p>
+                                        <div class="book-meta">
+                                            <span><i class="fas fa-bookmark"></i> Ficción</span>
+                                            <span><i class="fas fa-calendar"></i> 1949</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="loan-details">
+                                    <div class="loan-date">
+                                        <span class="label">Prestado el:</span>
+                                        <span class="value">15 Abril, 2023</span>
+                                    </div>
+                                    <div class="due-date">
+                                        <span class="label">Fecha de vencimiento:</span>
+                                        <span class="value">15 Mayo, 2023</span>
+                                    </div>
+                                    <div class="loan-location">
+                                        <span class="label">Ubicación:</span>
+                                        <span class="value">Biblioteca Central</span>
+                                    </div>
+                                </div>
+                                <div class="loan-actions">
+                                    <button class="btn btn-primary" disabled>
+                                        <i class="fas fa-sync-alt"></i>
+                                        Renovar
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-undo"></i>
+                                        Devolver
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Préstamo 2 (Próximo a vencer) -->
+                            <div class="loan-card soon">
+                                <div class="loan-status">
+                                    <span class="status-badge">Próximo a vencer</span>
+                                    <span class="soon-days">5 días</span>
+                                </div>
+                                <div class="loan-book">
+                                    <img src="https://via.placeholder.com/120x180/f59e0b/FFFFFF?text=Sapiens" alt="Sapiens">
+                                    <div class="loan-book-info">
+                                        <h3>Sapiens: De Animales a Dioses</h3>
+                                        <p class="book-author">Yuval Noah Harari</p>
+                                        <div class="book-meta">
+                                            <span><i class="fas fa-bookmark"></i> Historia</span>
+                                            <span><i class="fas fa-calendar"></i> 2011</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="loan-details">
+                                    <div class="loan-date">
+                                        <span class="label">Prestado el:</span>
+                                        <span class="value">23 Abril, 2023</span>
+                                    </div>
+                                    <div class="due-date">
+                                        <span class="label">Fecha de vencimiento:</span>
+                                        <span class="value">23 Mayo, 2023</span>
+                                    </div>
+                                    <div class="loan-location">
+                                        <span class="label">Ubicación:</span>
+                                        <span class="value">Biblioteca Central</span>
+                                    </div>
+                                </div>
+                                <div class="loan-actions">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Renovar
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-undo"></i>
+                                        Devolver
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Préstamo 3 (Al día) -->
+                            <div class="loan-card ontime">
+                                <div class="loan-status">
+                                    <span class="status-badge">Al día</span>
+                                    <span class="ontime-days">15 días</span>
+                                </div>
+                                <div class="loan-book">
+                                    <img src="https://via.placeholder.com/120x180/10b981/FFFFFF?text=Cien+Años" alt="Cien Años de Soledad">
+                                    <div class="loan-book-info">
+                                        <h3>Cien Años de Soledad</h3>
+                                        <p class="book-author">Gabriel García Márquez</p>
+                                        <div class="book-meta">
+                                            <span><i class="fas fa-bookmark"></i> Ficción</span>
+                                            <span><i class="fas fa-calendar"></i> 1967</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="loan-details">
+                                    <div class="loan-date">
+                                        <span class="label">Prestado el:</span>
+                                        <span class="value">3 Mayo, 2023</span>
+                                    </div>
+                                    <div class="due-date">
+                                        <span class="label">Fecha de vencimiento:</span>
+                                        <span class="value">3 Junio, 2023</span>
+                                    </div>
+                                    <div class="loan-location">
+                                        <span class="label">Ubicación:</span>
+                                        <span class="value">Biblioteca Central</span>
+                                    </div>
+                                </div>
+                                <div class="loan-actions">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Renovar
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-undo"></i>
+                                        Devolver
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Préstamo 4 (Al día) -->
+                            <div class="loan-card ontime">
+                                <div class="loan-status">
+                                    <span class="status-badge">Al día</span>
+                                    <span class="ontime-days">22 días</span>
+                                </div>
+                                <div class="loan-book">
+                                    <img src="https://via.placeholder.com/120x180/6366f1/FFFFFF?text=Rayuela" alt="Rayuela">
+                                    <div class="loan-book-info">
+                                        <h3>Rayuela</h3>
+                                        <p class="book-author">Julio Cortázar</p>
+                                        <div class="book-meta">
+                                            <span><i class="fas fa-bookmark"></i> Ficción</span>
+                                            <span><i class="fas fa-calendar"></i> 1963</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="loan-details">
+                                    <div class="loan-date">
+                                        <span class="label">Prestado el:</span>
+                                        <span class="value">10 Mayo, 2023</span>
+                                    </div>
+                                    <div class="due-date">
+                                        <span class="label">Fecha de vencimiento:</span>
+                                        <span class="value">10 Junio, 2023</span>
+                                    </div>
+                                    <div class="loan-location">
+                                        <span class="label">Ubicación:</span>
+                                        <span class="value">Biblioteca Central</span>
+                                    </div>
+                                </div>
+                                <div class="loan-actions">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Renovar
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-undo"></i>
+                                        Devolver
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Historial -->
+                    <div class="tab-content" id="history-tab">
+                        <div class="loans-history-header">
+                            <h3>Historial de Préstamos</h3>
+                            <p>Últimos 12 préstamos completados</p>
+                        </div>
+
+                        <div class="loans-history-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Libro</th>
+                                        <th>Fecha de préstamo</th>
+                                        <th>Fecha de devolución</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="book-cell">
+                                            <img src="https://via.placeholder.com/40x60/8b5cf6/FFFFFF?text=El+Aleph" alt="El Aleph">
+                                            <div>
+                                                <h4>El Aleph</h4>
+                                                <p>Jorge Luis Borges</p>
+                                            </div>
+                                        </td>
+                                        <td>10 Marzo, 2023</td>
+                                        <td>9 Abril, 2023</td>
+                                        <td><span class="status-pill completed">Devuelto a tiempo</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline">
+                                                <i class="fas fa-redo"></i>
+                                                Volver a pedir
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="book-cell">
+                                            <img src="https://via.placeholder.com/40x60/ef4444/FFFFFF?text=La+Casa" alt="La Casa de los Espíritus">
+                                            <div>
+                                                <h4>La Casa de los Espíritus</h4>
+                                                <p>Isabel Allende</p>
+                                            </div>
+                                        </td>
+                                        <td>5 Febrero, 2023</td>
+                                        <td>15 Marzo, 2023</td>
+                                        <td><span class="status-pill late">Devuelto con retraso</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline">
+                                                <i class="fas fa-redo"></i>
+                                                Volver a pedir
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="book-cell">
+                                            <img src="https://via.placeholder.com/40x60/10b981/FFFFFF?text=Cosmos" alt="Cosmos">
+                                            <div>
+                                                <h4>Cosmos</h4>
+                                                <p>Carl Sagan</p>
+                                            </div>
+                                        </td>
+                                        <td>20 Enero, 2023</td>
+                                        <td>19 Febrero, 2023</td>
+                                        <td><span class="status-pill completed">Devuelto a tiempo</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline">
+                                                <i class="fas fa-redo"></i>
+                                                Volver a pedir
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="book-cell">
+                                            <img src="https://via.placeholder.com/40x60/6366f1/FFFFFF?text=El+Amor" alt="El Amor en los Tiempos del Cólera">
+                                            <div>
+                                                <h4>El Amor en los Tiempos del Cólera</h4>
+                                                <p>Gabriel García Márquez</p>
+                                            </div>
+                                        </td>
+                                        <td>5 Diciembre, 2022</td>
+                                        <td>4 Enero, 2023</td>
+                                        <td><span class="status-pill completed">Devuelto a tiempo</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline">
+                                                <i class="fas fa-redo"></i>
+                                                Volver a pedir
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="book-cell">
+                                            <img src="https://via.placeholder.com/40x60/f59e0b/FFFFFF?text=Ficciones" alt="Ficciones">
+                                            <div>
+                                                <h4>Ficciones</h4>
+                                                <p>Jorge Luis Borges</p>
+                                            </div>
+                                        </td>
+                                        <td>10 Noviembre, 2022</td>
+                                        <td>20 Diciembre, 2022</td>
+                                        <td><span class="status-pill late">Devuelto con retraso</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline">
+                                                <i class="fas fa-redo"></i>
+                                                Volver a pedir
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="pagination">
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="pagination-btn active">1</button>
+                            <button class="pagination-btn">2</button>
+                            <button class="pagination-btn">3</button>
+                            <button class="pagination-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Reservados -->
+                    <div class="tab-content" id="reserved-tab">
+                        <div class="loans-reserved-header">
+                            <h3>Libros Reservados</h3>
+                            <p>Libros que has reservado y están pendientes de disponibilidad</p>
+                        </div>
+
+                        <div class="reserved-list">
+                            <!-- Reserva 1 -->
+                            <div class="reserved-card">
+                                <div class="reserved-status">
+                                    <span class="status-badge waiting">En espera</span>
+                                    <span class="queue-position">Posición #2 en cola</span>
+                                </div>
+                                <div class="reserved-book">
+                                    <img src="https://via.placeholder.com/120x180/8b5cf6/FFFFFF?text=La+Ciudad" alt="La Ciudad y los Perros">
+                                    <div class="reserved-book-info">
+                                        <h3>La Ciudad y los Perros</h3>
+                                        <p class="book-author">Mario Vargas Llosa</p>
+                                        <div class="book-meta">
+                                            <span><i class="fas fa-bookmark"></i> Ficción</span>
+                                            <span><i class="fas fa-calendar"></i> 1963</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="reserved-details">
+                                    <div class="reserved-date">
+                                        <span class="label">Reservado el:</span>
+                                        <span class="value">5 Mayo, 2023</span>
+                                    </div>
+                                    <div class="estimated-date">
+                                        <span class="label">Disponibilidad estimada:</span>
+                                        <span class="value">25 Mayo, 2023</span>
+                                    </div>
+                                    <div class="reserved-location">
+                                        <span class="label">Ubicación:</span>
+                                        <span class="value">Biblioteca Central</span>
+                                    </div>
+                                </div>
+                                <div class="reserved-actions">
+                                    <button class="btn btn-outline btn-danger">
+                                        <i class="fas fa-times"></i>
+                                        Cancelar Reserva
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Reserva 2 -->
+                            <div class="reserved-card">
+                                <div class="reserved-status">
+                                    <span class="status-badge ready">Disponible</span>
+                                    <span class="pickup-deadline">Recoger antes del 20 Mayo</span>
+                                </div>
+                                <div class="reserved-book">
+                                    <img src="https://via.placeholder.com/120x180/6366f1/FFFFFF?text=Cronica" alt="Crónica de una Muerte Anunciada">
+                                    <div class="reserved-book-info">
+                                        <h3>Crónica de una Muerte Anunciada</h3>
+                                        <p class="book-author">Gabriel García Márquez</p>
+                                        <div class="book-meta">
+                                            <span><i class="fas fa-bookmark"></i> Ficción</span>
+                                            <span><i class="fas fa-calendar"></i> 1981</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="reserved-details">
+                                    <div class="reserved-date">
+                                        <span class="label">Reservado el:</span>
+                                        <span class="value">1 Mayo, 2023</span>
+                                    </div>
+                                    <div class="available-date">
+                                        <span class="label">Disponible desde:</span>
+                                        <span class="value">15 Mayo, 2023</span>
+                                    </div>
+                                    <div class="reserved-location">
+                                        <span class="label">Ubicación para recoger:</span>
+                                        <span class="value">Biblioteca Central - Mostrador Principal</span>
+                                    </div>
+                                </div>
+                                <div class="reserved-actions">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-check"></i>
+                                        Confirmar Recogida
+                                    </button>
+                                    <button class="btn btn-outline btn-danger">
+                                        <i class="fas fa-times"></i>
+                                        Cancelar Reserva
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <div style="text-align: center; padding: 50px;">
+            <h2>Necesitas iniciar sesión para ver o pedir préstamos.</h2>
+            <a href="{% url 'login' %}" class="btn btn-primary" style="margin-top: 20px;">Iniciar Sesión</a>
+        </div>
+    {% endif %}
+
+    </main>
+
+    <!-- Modal de Nuevo Préstamo -->
+    <div class="modal" id="loanModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Solicitar Nuevo Préstamo</h3>
+                <button class="close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="loanForm">
+                    <div class="form-section">
+                        <h4>1. Selecciona los libros</h4>
+                        <div class="book-selection">
+                            <div class="search-box">
+                                <input type="text" id="searchBooks" placeholder="Buscar libros por título o autor...">
+                                <button type="button" class="search-btn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+
+                            <div class="available-books">
+                                <div class="book-option">
+                                    <input type="checkbox" id="book1" name="books" value="1">
+                                    <label for="book1">
+                                        <img src="https://via.placeholder.com/60x90/10b981/FFFFFF?text=El+Aleph" alt="El Aleph">
+                                        <div class="book-info">
+                                            <h5>El Aleph</h5>
+                                            <p>Jorge Luis Borges</p>
+                                            <span class="book-availability">Disponible</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="book-option">
+                                    <input type="checkbox" id="book2" name="books" value="2">
+                                    <label for="book2">
+                                        <img src="https://via.placeholder.com/60x90/6366f1/FFFFFF?text=El+Amor" alt="El Amor en los Tiempos del Cólera">
+                                        <div class="book-info">
+                                            <h5>El Amor en los Tiempos del Cólera</h5>
+                                            <p>Gabriel García Márquez</p>
+                                            <span class="book-availability">Disponible</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="book-option">
+                                    <input type="checkbox" id="book3" name="books" value="3">
+                                    <label for="book3">
+                                        <img src="https://via.placeholder.com/60x90/ef4444/FFFFFF?text=1984" alt="1984">
+                                        <div class="book-info">
+                                            <h5>1984</h5>
+                                            <p>George Orwell</p>
+                                            <span class="book-availability">Disponible</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="book-option">
+                                    <input type="checkbox" id="book4" name="books" value="4">
+                                    <label for="book4">
+                                        <img src="https://via.placeholder.com/60x90/f59e0b/FFFFFF?text=Sapiens" alt="Sapiens">
+                                        <div class="book-info">
+                                            <h5>Sapiens: De Animales a Dioses</h5>
+                                            <p>Yuval Noah Harari</p>
+                                            <span class="book-availability">Disponible</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="book-option">
+                                    <input type="checkbox" id="book5" name="books" value="5">
+                                    <label for="book5">
+                                        <img src="https://via.placeholder.com/60x90/8b5cf6/FFFFFF?text=Ficciones" alt="Ficciones">
+                                        <div class="book-info">
+                                            <h5>Ficciones</h5>
+                                            <p>Jorge Luis Borges</p>
+                                            <span class="book-availability">Disponible</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="selected-books">
+                                <h5>Libros seleccionados: <span id="selectedCount">0</span></h5>
+                                <ul id="selectedBooksList">
+                                    <!-- Los libros seleccionados se mostrarán aquí -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>2. Elige la fecha de devolución</h4>
+                        <div class="date-selection">
+                            <div class="date-options">
+                                <div class="date-option">
+                                    <input type="radio" id="date7" name="returnDate" value="7" checked>
+                                    <label for="date7">
+                                        <span class="date-days">7 días</span>
+                                        <span class="date-value" id="date7Value"></span>
+                                    </label>
+                                </div>
+
+                                <div class="date-option">
+                                    <input type="radio" id="date14" name="returnDate" value="14">
+                                    <label for="date14">
+                                        <span class="date-days">14 días</span>
+                                        <span class="date-value" id="date14Value"></span>
+                                    </label>
+                                </div>
+
+                                <div class="date-option">
+                                    <input type="radio" id="date30" name="returnDate" value="30">
+                                    <label for="date30">
+                                        <span class="date-days">30 días</span>
+                                        <span class="date-value" id="date30Value"></span>
+                                    </label>
+                                </div>
+
+                                <div class="date-option">
+                                    <input type="radio" id="dateCustom" name="returnDate" value="custom">
+                                    <label for="dateCustom">
+                                        <span class="date-days">Personalizada</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="custom-date" id="customDateContainer">
+                                <label for="customDateInput">Selecciona una fecha:</label>
+                                <input type="date" id="customDateInput" name="customDate">
+                                <p class="date-note">Nota: La fecha máxima de préstamo es de 60 días.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>3. Confirma tu préstamo</h4>
+                        <div class="loan-summary">
+                            <div class="summary-row">
+                                <span class="summary-label">Libros seleccionados:</span>
+                                <span class="summary-value" id="summaryBooks">Ninguno</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Fecha de préstamo:</span>
+                                <span class="summary-value" id="summaryLoanDate"></span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Fecha de devolución:</span>
+                                <span class="summary-value" id="summaryReturnDate"></span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Ubicación:</span>
+                                <span class="summary-value">Biblioteca Central</span>
+                            </div>
+                        </div>
+
+                        <div class="loan-terms">
+                            <label class="terms-checkbox">
+                                <input type="checkbox" id="termsAccepted" name="termsAccepted" required>
+                                <span>Acepto los <a href="#" class="terms-link">términos y condiciones</a> de préstamo de la biblioteca</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="cancelLoan">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="confirmLoan">Confirmar Préstamo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="https://via.placeholder.com/40/10b981/FFFFFF?text=B" alt="Logo BiblioVirtual">
+                    <h3>BiblioVirtual</h3>
+                </div>
+                <p>© <span id="currentYear"></span> BiblioVirtual. Todos los derechos reservados.</p>
+                <div class="footer-links">
+                    <a href="#">Términos</a>
+                    <a href="#">Privacidad</a>
+                    <a href="#">Ayuda</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/prestamos.js' %}"></script>
+</body>
+</html>
