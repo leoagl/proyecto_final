@@ -17,11 +17,15 @@ class Libro(models.Model):
     genero = models.ForeignKey(Genero, on_delete=models.CASCADE)
     existencias = models.PositiveIntegerField(default=1)
     portada = models.ImageField(upload_to='portadas/', null=True, blank=True)
+    portada_url = models.URLField(blank=True, null=True)  # <--- AÑADE ESTE CAMPO
 
     def portada_preview(self):
         if self.portada:
             return mark_safe(
                 f'<img src="{self.portada.url}" width="120" height="160" style="object-fit: contain; border: 1px solid #ccc;" />')
+        elif self.portada_url:  # <--- MUESTRA LA URL SI LA IMAGEN AÚN NO SE HA GUARDADO
+            return mark_safe(
+                f'<img src="{self.portada_url}" width="120" height="160" style="object-fit: contain; border: 1px solid #ccc;" />')
         return "(Sin portada)"
 
     portada_preview.short_description = "Vista previa"

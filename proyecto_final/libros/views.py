@@ -15,30 +15,37 @@ def buscar_libro_googlebooks(request):
         return JsonResponse({'error': 'No se proporcionó un título'}, status=400)
 
     try:
-        response = requests.get("https://www.googleapis.com/books/v1/volumes", params={
-            "q": titulo,
-            "key": settings.GOOGLE_BOOKS_API_KEY
-        })
+        response = requests.get(
+            "https://www.googleapis.com/books/v1/volumes",
+            params={
+                "q": titulo,
+                "key": settings.GOOGLE_BOOKS_API_KEY,
+                "maxResults": 5  # Obtener varios resultados
+            }
+        )
         data = response.json()
 
-        # 🔴 Imprime para depurar
-        print("🔍 Resultado completo:", data)
+        print("🔍 Resultado completo (varios):", data) # Depuración
 
-        if 'items' not in data:
-            return JsonResponse({'exito': False})
+        resultados = []
+        if 'items' in data:
+            for item in data['items']:
+                info = item.get('volumeInfo', {})
+                resultado = {
+                    'id': item.get('id', ''), # Añadir un ID único para cada resultado
+                    'titulo': info.get('title', ''),
+                    'autor': ", ".join(info.get('authors', [])),
+                    'editorial': info.get('publisher', ''),
+                    'año_publicacion': info.get('publishedDate', '')[:4] if info.get('publishedDate') else '',
+                    'ISBN': next((x['identifier'] for x in info.get('industryIdentifiers', []) if x['type'] == 'ISBN_13'), ''),
+                    'portada': info.get('imageLinks', {}).get('thumbnail', ''),
+                }
+                resultados.append(resultado)
 
-        info = data['items'][0]['volumeInfo']
-        resultado = {
-            'exito': True,
-            'titulo': info.get('title', ''),
-            'autor': ", ".join(info.get('authors', [])),
-            'editorial': info.get('publisher', ''),
-            'año_publicacion': info.get('publishedDate', '')[:4],
-            'ISBN': next((x['identifier'] for x in info.get('industryIdentifiers', []) if x['type'] == 'ISBN_13'), ''),
-            'portada': info.get('imageLinks', {}).get('thumbnail', ''),
-        }
-        return JsonResponse(resultado)
+        return JsonResponse({'exito': True, 'resultados': resultados})
 
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': f'Error de conexión con la API de Google Books: {str(e)}'}, status=500)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 

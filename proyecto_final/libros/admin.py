@@ -59,7 +59,7 @@ class LibroAdminForm(forms.ModelForm):
 class LibroAdmin(admin.ModelAdmin):
     form = LibroAdminForm
     readonly_fields = ('vista_previa_portada',)
-    fields = ('titulo', 'autor', 'editorial', 'año_publicacion', 'ISBN', 'portada', 'vista_previa_portada', 'genero')
+    fields = ('titulo', 'autor', 'editorial', 'año_publicacion', 'ISBN', 'portada_url', 'portada', 'vista_previa_portada', 'genero')
 
     list_display = ('titulo', 'autor', 'editorial', 'año_publicacion', 'miniatura_portada')
     list_display_links = ('titulo',)  # Para que el título sea el enlace a editar
