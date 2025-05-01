@@ -61,192 +61,101 @@
                 </div>
 
                 <div class="catalog-layout">
-                    <!-- Filtros de búsqueda avanzada -->
                     <aside class="catalog-filters">
+                    <form method="get">
                         <div class="filter-header">
                             <h3>Búsqueda Avanzada</h3>
-                            <button class="toggle-filters" id="toggleFilters">
+                            <button class="toggle-filters" id="toggleFilters" type="button">
                                 <i class="fas fa-sliders-h"></i>
                             </button>
                         </div>
 
                         <div class="filters-body" id="filtersBody">
+                            <!-- Buscador -->
                             <div class="search-box">
-                                <input type="text" id="searchInput" placeholder="Buscar por título, autor...">
-                                <button class="search-btn">
+                            <form method="get">
+                                <input type="text" id="searchInput" name="q" placeholder="Buscar por título, autor..." value="{{ query }}">
+                                <button class="search-btn" type="submit">
                                     <i class="fas fa-search"></i>
                                 </button>
+                            </form>
                             </div>
 
+                            <!-- Categorías dinámicas -->
                             <div class="filter-group">
                                 <h4>Categorías</h4>
                                 <div class="filter-options">
+                                    {% for genero in generos %}
                                     <label class="filter-option">
-                                        <input type="checkbox" name="category" value="ficcion">
-                                        <span>Ficción</span>
-                                        <span class="count">(42)</span>
+                                        <input type="checkbox" name="categoria" value="{{ genero.id }}" {% if genero.id|stringformat:"s" in categorias_seleccionadas %}checked{% endif %}>
+                                        <span>{{ genero.nombre_genero }}</span>
                                     </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="category" value="no-ficcion">
-                                        <span>No Ficción</span>
-                                        <span class="count">(38)</span>
-                                    </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="category" value="ciencia">
-                                        <span>Ciencia</span>
-                                        <span class="count">(24)</span>
-                                    </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="category" value="historia">
-                                        <span>Historia</span>
-                                        <span class="count">(19)</span>
-                                    </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="category" value="biografia">
-                                        <span>Biografía</span>
-                                        <span class="count">(15)</span>
-                                    </label>
+                                    {% endfor %}
                                 </div>
-                                <button class="show-more">Ver más</button>
                             </div>
 
+                            <!-- Autores -->
                             <div class="filter-group">
                                 <h4>Autores</h4>
-                                <div class="filter-options">
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="author" value="gabriel-garcia-marquez">
-                                        <span>Gabriel García Márquez</span>
-                                        <span class="count">(8)</span>
-                                    </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="author" value="isabel-allende">
-                                        <span>Isabel Allende</span>
-                                        <span class="count">(6)</span>
-                                    </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="author" value="julio-cortazar">
-                                        <span>Julio Cortázar</span>
-                                        <span class="count">(5)</span>
-                                    </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="author" value="mario-vargas-llosa">
-                                        <span>Mario Vargas Llosa</span>
-                                        <span class="count">(7)</span>
-                                    </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="author" value="jorge-luis-borges">
-                                        <span>Jorge Luis Borges</span>
-                                        <span class="count">(9)</span>
-                                    </label>
+                                    <div class="filter-options">
+                                    {% for autor in autores %}
+                                        <label class="filter-option">
+                                            <input type="checkbox" name="autor" value="{{ autor }}"
+                                                {% if autor in autores_seleccionados %}checked{% endif %}>
+                                            <span>{{ autor }}</span>
+                                        </label>
+                                    {% endfor %}
                                 </div>
-                                <button class="show-more">Ver más</button>
                             </div>
 
+                            <!-- Año -->
                             <div class="filter-group">
                                 <h4>Año de Publicación</h4>
                                 <div class="range-slider">
                                     <div class="range-values">
-                                        <span id="yearMin">1950</span>
-                                        <span id="yearMax">2023</span>
+                                        <span id="yearMin">{{ anyo_min }}</span>
+                                        <span id="yearMax">{{ anyo_max }}</span>
                                     </div>
                                     <div class="range-inputs">
-                                        <input type="range" id="yearMinRange" min="1950" max="2023" value="1950" class="range">
-                                        <input type="range" id="yearMaxRange" min="1950" max="2023" value="2023" class="range">
+                                        <input type="range" name="anyo_min" id="yearMinRange"
+                                            min="{{ rango_anyos.min_anyo }}" max="{{ rango_anyos.max_anyo }}" value="{{ anyo_min }}" class="range">
+                                        <input type="range" name="anyo_max" id="yearMaxRange"
+                                            min="{{ rango_anyos.min_anyo }}" max="{{ rango_anyos.max_anyo }}" value="{{ anyo_max }}" class="range">
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Disponibilidad -->
                             <div class="filter-group">
                                 <h4>Disponibilidad</h4>
-                                <div class="filter-options">
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="availability" value="disponible" checked>
-                                        <span>Disponible</span>
-                                    </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="availability" value="prestado">
-                                        <span>Prestado</span>
-                                    </label>
-                                    <label class="filter-option">
-                                        <input type="checkbox" name="availability" value="reservado">
-                                        <span>Reservado</span>
-                                    </label>
-                                </div>
+                                <label><input type="checkbox" name="disponibilidad" value="disponible" {% if request.GET.disponibilidad == 'disponible' %}checked{% endif %}> Disponible</label>
                             </div>
 
+                            <!-- Calificación (todavía no funcional, pero preparado) -->
                             <div class="filter-group">
                                 <h4>Calificación</h4>
-                                <div class="rating-filter">
-                                    <label class="rating-option">
-                                        <input type="radio" name="rating" value="5">
-                                        <div class="stars">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                        </div>
-                                        <span>y más</span>
-                                    </label>
-                                    <label class="rating-option">
-                                        <input type="radio" name="rating" value="4">
-                                        <div class="stars">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                        </div>
-                                        <span>y más</span>
-                                    </label>
-                                    <label class="rating-option">
-                                        <input type="radio" name="rating" value="3">
-                                        <div class="stars">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                        </div>
-                                        <span>y más</span>
-                                    </label>
-                                    <label class="rating-option">
-                                        <input type="radio" name="rating" value="2">
-                                        <div class="stars">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                        </div>
-                                        <span>y más</span>
-                                    </label>
-                                    <label class="rating-option">
-                                        <input type="radio" name="rating" value="1">
-                                        <div class="stars">
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                        </div>
-                                        <span>y más</span>
-                                    </label>
-                                </div>
+                                <select name="calificacion_min">
+                                    <option value="">Cualquiera</option>
+                                    {% for i in "54321" %}
+                                        <option value="{{ i }}" {% if request.GET.calificacion_min == i %}selected{% endif %}>{{ i }} estrellas o más</option>
+                                    {% endfor %}
+                                </select>
                             </div>
 
+                            <!-- Botones -->
                             <div class="filter-actions">
-                                <button class="btn btn-outline" id="resetFilters">Restablecer</button>
-                                <button class="btn btn-primary" id="applyFilters">Aplicar Filtros</button>
+                                <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+                                <a href="{% url 'catalogo' %}" class="btn btn-outline">Restablecer</a>
                             </div>
                         </div>
-                    </aside>
+                    </form>
+                </aside>
 
                     <!-- Resultados del catálogo -->
                     <div class="catalog-results">
                         <div class="results-header">
                             <div class="results-count">
-                                <span>Mostrando 1-12 de 156 resultados</span>
+                                <span>Mostrando {{ page_obj.start_index }}-{{ page_obj.end_index }} de {{ paginator.count }} resultados</span>
                             </div>
                             <div class="results-sort">
                                 <label for="sortBy">Ordenar por:</label>
@@ -305,21 +214,40 @@
                         <p>No hay libros disponibles en este momento.</p>
                         {% endfor %}
                         </div>
+                        {% with request.GET.urlencode as query_string %}
+                            {% with query_string|cut:'page='|cut:'&' as query_params %}
+                            <div class="pagination">
+                                <div class="page-links">
+                                    {% if page_obj.paginator.num_pages > 1 %}
+                                        <a href="?page=1&{{ query_params }}" class="pagination-btn">« Primero</a>
+                                    {% endif %}
+                                    {% if page_obj.has_previous %}
+                                        <a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="pagination-btn">‹ Anterior</a>
+                                    {% endif %}
 
-                        <div class="pagination">
-                            <button class="pagination-btn" disabled>
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button class="pagination-btn active">1</button>
-                            <button class="pagination-btn">2</button>
-                            <button class="pagination-btn">3</button>
-                            <button class="pagination-btn">4</button>
-                            <span class="pagination-ellipsis">...</span>
-                            <button class="pagination-btn">13</button>
-                            <button class="pagination-btn">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
+                                    {% for num in page_obj.paginator.page_range %}
+                                        {% if num == page_obj.number %}
+                                            <button class="pagination-btn active" disabled>{{ num }}</button>
+                                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                            <a href="?page={{ num }}&{{ query_params }}" class="pagination-btn">{{ num }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if page_obj.has_next %}
+                                        <a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="pagination-btn">Siguiente ›</a>
+                                    {% endif %}
+                                    {% if page_obj.paginator.num_pages > 1 %}
+                                        <a href="?page={{ page_obj.paginator.num_pages }}&{{ query_params }}" class="pagination-btn">Último »</a>
+                                    {% endif %}
+                                </div>
+
+                                <div class="page-info">
+
+                                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                                </div>
+                            </div>
+                            {% endwith %}
+                        {% endwith %}
                     </div>
                 </div>
             </div>

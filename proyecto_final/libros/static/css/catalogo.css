@@ -733,24 +733,30 @@ img {
 
 /* Paginación */
 .pagination {
-    display: flex;
-    justify-content: center;
-    gap: 0.25rem;
-    margin-top: 2rem;
+    display: flex; /* Para que los elementos internos se comporten en línea */
+    flex-direction: column; /* Coloca los elementos uno encima del otro */
+    align-items: center; /* Centra los elementos horizontalmente */
+}
+
+.page-links {
+    text-align: center; /* Centra el contenido (los botones) dentro de .page-links */
+    margin-bottom: 10px; /* Espacio entre los botones y el texto */
+}
+
+.page-info {
+    /* Estilos para el texto "Página X de Y" */
 }
 
 .pagination-btn {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--gray-light);
-    background-color: white;
-    font-size: 0.875rem;
+    /* Estilos para los botones */
+    display: inline-block; /* Para que los botones estén en línea */
+    margin: 0 5px; /* Espacio entre los botones */
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #333;
     cursor: pointer;
-    transition: var(--transition);
+    border-radius: 4px;
 }
 
 .pagination-btn:hover:not(:disabled) {
