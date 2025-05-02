@@ -1,4 +1,4 @@
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib import messages
 from django.db.models import Min, Max, Avg, Count
 from django.http import JsonResponse
@@ -122,10 +122,28 @@ def catalogo(request):
 
 def detalle_libro(request, libro_id):
     libro = get_object_or_404(Libro, pk=libro_id)
-    resenas = libro.resenas.select_related('usuario').order_by('-fecha')
+    todas_las_resenas = libro.resenas.select_related('usuario').order_by('-fecha')
+    related_books = obtener_libros_relacionados(libro)
+
+    # Filtrado por calificación para la lista de comentarios
+    resenas_queryset = todas_las_resenas
+    calificacion_filter = request.GET.get('calificacion_filter')
+    if calificacion_filter != 'all' and calificacion_filter in ['5', '4', '3', '2', '1']:
+        resenas_queryset = resenas_queryset.filter(calificacion=int(calificacion_filter))
+
+    # Paginación de reseñas
+    paginator_resenas = Paginator(resenas_queryset, 5)
+    page_resenas = request.GET.get('page_resenas')
+    try:
+        resenas = paginator_resenas.get_page(page_resenas)
+    except PageNotAnInteger:
+        resenas = paginator_resenas.page(1)
+    except EmptyPage:
+        resenas = paginator_resenas.page(paginator_resenas.num_pages)
+
     promedio_calificacion = libro.resenas.aggregate(avg_calificacion=Avg('calificacion'))['avg_calificacion']
-    total_resenas = libro.resenas.count()
-    calificacion_counts = libro.resenas.values('calificacion').annotate(count=Count('calificacion')).order_by('-calificacion')
+    total_resenas = todas_las_resenas.count() # Usar todas_las_resenas para el total general
+    calificacion_counts = libro.resenas.values('calificacion').annotate(count=Count('calificacion')).order_by('-calificacion') # Usar libro.resenas para la distribución general
 
     # Calcular el porcentaje para cada calificación
     calificacion_percentages = []
@@ -134,19 +152,7 @@ def detalle_libro(request, libro_id):
             percentage = (count_item['count'] * 100) / total_resenas
             calificacion_percentages.append({'calificacion': count_item['calificacion'], 'percentage': percentage})
 
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            form = ReseñaForm(request.POST)
-            if form.is_valid():
-                reseña = form.save(commit=False)
-                reseña.usuario = request.user
-                reseña.libro = libro
-                reseña.save()
-                return redirect('detalle_libro', libro_id=libro.id)
-        else:
-            return redirect('login')
-    else:
-        form = ReseñaForm()
+    form = ReseñaForm()
 
     context = {
         'libro': libro,
@@ -155,7 +161,8 @@ def detalle_libro(request, libro_id):
         'promedio_calificacion': promedio_calificacion,
         'total_resenas': total_resenas,
         'calificacion_counts': calificacion_counts,
-        'calificacion_percentages': calificacion_percentages, # Pasa los porcentajes calculados
+        'calificacion_percentages': calificacion_percentages,
+        'related_books': related_books,
     }
     return render(request, 'libros/detalle_libro.html', context)
 
@@ -180,3 +187,6 @@ def crear_resena(request, libro_id):
         'form': form,
     }
     return render(request, 'libros/detalle_libro.html', context)
+
+def obtener_libros_relacionados(libro):
+    return Libro.objects.filter(genero=libro.genero).exclude(id=libro.id)[:4]

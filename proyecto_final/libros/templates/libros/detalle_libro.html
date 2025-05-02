@@ -171,12 +171,9 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Tabs para reseñas y detalles adicionales -->
             <div class="book-tabs">
                 <div class="tabs-header">
                     <button class="tab-btn active" data-tab="reviews">Reseñas y Calificaciones</button>
-                    <button class="tab-btn" data-tab="related">Libros Relacionados</button>
                 </div>
 
                 <div class="tabs-content">
@@ -224,26 +221,24 @@
                         </div>
 
                         <div class="reviews-filter">
+                        <form method="get" action="{% url 'detalle_libro' libro.id %}#reviews-tab">
                             <div class="filter-options">
-                                <select id="reviewsSort">
-                                    <option value="recent">Más recientes</option>
-                                    <option value="helpful">Más útiles</option>
-                                    <option value="highest">Mayor calificación</option>
-                                    <option value="lowest">Menor calificación</option>
+                                <select id="reviewsSort" name="orden_resenas">
+                                    <option value="recent" {% if request.GET.orden_resenas == 'recent' %}selected{% endif %}>Más recientes</option>
+                                    <option value="highest" {% if request.GET.orden_resenas == 'highest' %}selected{% endif %}>Mayor calificación</option>
+                                    <option value="lowest" {% if request.GET.orden_resenas == 'lowest' %}selected{% endif %}>Menor calificación</option>
                                 </select>
-                                <select id="reviewsFilter">
-                                    <option value="all">Todas las calificaciones</option>
-                                    <option value="5">5 estrellas</option>
-                                    <option value="4">4 estrellas</option>
-                                    <option value="3">3 estrellas</option>
-                                    <option value="2">2 estrellas</option>
-                                    <option value="1">1 estrella</option>
+                                <select id="reviewsFilter" name="calificacion_filter">
+                                    <option value="all" {% if request.GET.calificacion_filter == 'all' %}selected{% endif %}>Todas las calificaciones</option>
+                                    <option value="5" {% if request.GET.calificacion_filter == '5' %}selected{% endif %}>5 estrellas</option>
+                                    <option value="4" {% if request.GET.calificacion_filter == '4' %}selected{% endif %}>4 estrellas</option>
+                                    <option value="3" {% if request.GET.calificacion_filter == '3' %}selected{% endif %}>3 estrellas</option>
+                                    <option value="2" {% if request.GET.calificacion_filter == '2' %}selected{% endif %}>2 estrellas</option>
+                                    <option value="1" {% if request.GET.calificacion_filter == '1' %}selected{% endif %}>1 estrella</option>
                                 </select>
+                                <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
                             </div>
-                            <div class="search-box">
-                                <input type="text" id="searchReviews" placeholder="Buscar en las reseñas...">
-                                <button class="search-btn"><i class="fas fa-search"></i></button>
-                            </div>
+                        </form>
                         </div>
 
                         <div class="reviews-list">
@@ -261,7 +256,7 @@
                                                             <span class="review-date">{{ resena.fecha }}</span>
                                                             <div class="reviewer-rating">
                                                             {% for i in "12345" %}
-                                                                {% if i <= resena.calificacion %}
+                                                                {% if i|add:0 <= resena.calificacion %}
                                                                     <i class="fas fa-star"></i>
                                                                 {% else %}
                                                                     <i class="far fa-star"></i>
@@ -280,116 +275,36 @@
                                         <p>Aún no hay reseñas para este libro. ¡Sé el primero en dejar una!</p>
                                     {% endfor %}
                             <!-- Paginación de reseñas -->
-                            <div class="pagination">
-                                <button class="pagination-btn active">1</button>
-                                <button class="pagination-btn">2</button>
-                                <button class="pagination-btn">3</button>
-                                <button class="pagination-btn">4</button>
-                                <button class="pagination-btn">
-                                    <i class="fas fa-ellipsis-h"></i>
-                                </button>
-                                <button class="pagination-btn">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
+                                    <div class="pagination">
+                                        <div class="page-links">
+                                            {% if reseñas.has_previous %}
+                                                <a href="?page_resenas=1#reviews-tab" class="pagination-btn">« Primero</a>
+                                                <a href="?page_resenas={{ reseñas.previous_page_number }}#reviews-tab" class="pagination-btn">‹ Anterior</a>
+                                            {% endif %}
+
+                                            {% for num in reseñas.paginator.page_range %}
+                                                {% if num == reseñas.number %}
+                                                    <button class="pagination-btn active" disabled>{{ num }}</button>
+                                                {% elif num > reseñas.number|add:'-3' and num < reseñas.number|add:'3' %}
+                                                    <a href="?page_resenas={{ num }}#reviews-tab" class="pagination-btn">{{ num }}</a>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {% if reseñas.has_next %}
+                                                <a href="?page_resenas={{ reseñas.next_page_number }}#reviews-tab" class="pagination-btn">Siguiente ›</a>
+                                                <a href="?page_resenas={{ reseñas.paginator.num_pages }}#reviews-tab" class="pagination-btn">Último »</a>
+                                            {% endif %}
+                                        </div>
+                                        <span class="page-info">
+                                            Página {{ reseñas.number }} de {{ reseñas.paginator.num_pages }}
+                                        </span>
+                                    </div>
                         </div>
                     </div>
 
-                    <!-- Tab de Libros Relacionados -->
-                    <div id="related-tab" class="tab-content">
-                        <div class="related-books">
-                            <h3>Libros Relacionados</h3>
-                            <p>Si te gustó "Cien Años de Soledad", también podrían interesarte estos libros:</p>
-
-                            <div class="related-books-grid">
-                                <!-- Libro relacionado 1 -->
-                                <div class="related-book-card">
-                                    <div class="related-book-cover">
-                                        <img src="https://via.placeholder.com/150x225/ef4444/FFFFFF?text=El+Amor+en+los+Tiempos+del+Cólera"
-                                            alt="El Amor en los Tiempos del Cólera">
-                                    </div>
-                                    <div class="related-book-info">
-                                        <h4>El Amor en los Tiempos del Cólera</h4>
-                                        <p class="related-book-author">Gabriel García Márquez</p>
-                                        <div class="related-book-rating">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star-half-alt"></i>
-                                            <span>4.5</span>
-                                        </div>
-                                        <a href="#" class="btn btn-outline btn-sm">Ver detalles</a>
-                                    </div>
-                                </div>
-
-                                <!-- Libro relacionado 2 -->
-                                <div class="related-book-card">
-                                    <div class="related-book-cover">
-                                        <img src="https://via.placeholder.com/150x225/10b981/FFFFFF?text=Pedro+Páramo"
-                                            alt="Pedro Páramo">
-                                    </div>
-                                    <div class="related-book-info">
-                                        <h4>Pedro Páramo</h4>
-                                        <p class="related-book-author">Juan Rulfo</p>
-                                        <div class="related-book-rating">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <span>4.0</span>
-                                        </div>
-                                        <a href="#" class="btn btn-outline btn-sm">Ver detalles</a>
-                                    </div>
-                                </div>
-
-                                <!-- Libro relacionado 3 -->
-                                <div class="related-book-card">
-                                    <div class="related-book-cover">
-                                        <img src="https://via.placeholder.com/150x225/6366f1/FFFFFF?text=La+Casa+de+los+Espíritus"
-                                            alt="La Casa de los Espíritus">
-                                    </div>
-                                    <div class="related-book-info">
-                                        <h4>La Casa de los Espíritus</h4>
-                                        <p class="related-book-author">Isabel Allende</p>
-                                        <div class="related-book-rating">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <span>4.2</span>
-                                        </div>
-                                        <a href="#" class="btn btn-outline btn-sm">Ver detalles</a>
-                                    </div>
-                                </div>
-
-                                <!-- Libro relacionado 4 -->
-                                <div class="related-book-card">
-                                    <div class="related-book-cover">
-                                        <img src="https://via.placeholder.com/150x225/f59e0b/FFFFFF?text=Rayuela"
-                                            alt="Rayuela">
-                                    </div>
-                                    <div class="related-book-info">
-                                        <h4>Rayuela</h4>
-                                        <p class="related-book-author">Julio Cortázar</p>
-                                        <div class="related-book-rating">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <span>4.1</span>
-                                        </div>
-                                        <a href="#" class="btn btn-outline btn-sm">Ver detalles</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
+        </div>
         </div>
     </main>
 

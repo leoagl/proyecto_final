@@ -763,13 +763,18 @@ main {
 }
 
 .reviews-filter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+    display: flex; /* Habilita flexbox */
+    align-items: center; /* Alinea verticalmente los elementos al centro */
+    gap: 20px; /* Espacio entre los elementos */
+    margin-bottom: 20px; /* Espacio inferior */
 }
+
+.reviews-filter .filter-options {
+    display: flex; /* Habilita flexbox para los selectores */
+    gap: 10px; /* Espacio entre los selectores */
+    align-items: center;
+}
+
 
 .filter-options {
     display: flex;
@@ -1368,6 +1373,35 @@ main {
     font-size: 0.875rem;
     background-color: var(--gray-light);
 }
+
+.pagination {
+    display: flex;
+    flex-direction: column; /* Asegura que los elementos estén en columna */
+    align-items: center; /* Centra horizontalmente los elementos */
+    margin-top: 15px;
+}
+
+.page-links {
+    text-align: center; /* Centra los botones dentro de este div */
+    margin-bottom: 10px; /* Espacio entre los botones y el texto */
+    display: block; /* Fuerza que el div de los botones ocupe una línea completa */
+}
+
+.page-info {
+    text-align: center; /* Centra el texto "Página X de Y" */
+}
+
+.pagination-btn {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
 
 /* Responsive */
 @media (max-width: 992px) {
