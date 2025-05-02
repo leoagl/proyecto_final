@@ -1,0 +1,469 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ libro.titulo }} - Biblioteca Virtual</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/detalle.css' %}">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="https://via.placeholder.com/40/10b981/FFFFFF?text=B" alt="Logo BiblioVirtual">
+                <h1>BiblioVirtual</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                    <li><a href="{% url 'catalogo' %}" class="active" >Catálogo</a></li>
+                    <li><a href="{% url 'prestamos' %}" >Prestamos</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+            {% if request.user.is_authenticated %}
+                <span class="welcome-msg">Bienvenido {{ request.user.username }}</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline active">Iniciar Sesión</a>
+                <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
+            {% endif %}
+            </div>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+        <ul>
+            <li><a href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="catalogo.html"><i class="fas fa-book"></i> Catálogo</a></li>
+            <li><a href="prestamos.html"><i class="fas fa-book-reader"></i> Préstamos</a></li>
+            <li><a href="eventos.html"><i class="fas fa-calendar-alt"></i> Eventos</a></li>
+            <li><a href="contacto.html"><i class="fas fa-envelope"></i> Contacto</a></li>
+        </ul>
+        <div class="mobile-user">
+            <img src="https://via.placeholder.com/32x32/6366f1/FFFFFF?text=US" alt="Avatar de Usuario"
+                class="user-avatar">
+            <span>Usuario</span>
+        </div>
+        <ul>
+            <li><a href="perfil.html"><i class="fas fa-user"></i> Mi Perfil</a></li>
+            <li><a href="prestamos.html"><i class="fas fa-book-reader"></i> Mis Préstamos</a></li>
+            <li><a href="favoritos.html"><i class="fas fa-heart"></i> Mis Favoritos</a></li>
+            <li><a href="historial.html"><i class="fas fa-history"></i> Historial</a></li>
+            <li><a href="configuracion.html"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="login.html" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+
+            <div class="book-detail-container">
+                <!-- Información principal del libro -->
+                <div class="book-main-info">
+                    <div class="book-cover">
+                        {% if libro.portada %}
+                            <img src="{{ libro.portada.url }}" alt="Portada de {{ libro.titulo }}">
+                        {% elif libro.portada_url %}
+                            <img src="{{ libro.portada_url }}" alt="Portada de {{ libro.titulo }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/300x450/6366f1/FFFFFF?text=Sin+Portada"
+                                alt="Portada genérica">
+                        {% endif %}
+                        <div class="book-rating-badge">
+                            <i class="fas fa-star"></i>
+                            <span>{{ promedio_calificacion|floatformat:1 }}</span>
+                        </div>
+                    </div>
+
+                    <div class="book-actions">
+                        <button id="requestLoanBtn" class="btn btn-primary">
+                            <i class="fas fa-book-reader"></i>
+                            Solicitar Préstamo
+                        </button>
+                    </div>
+
+                    <div class="book-availability">
+                        <div class="availability-status available">
+                            <i class="fas fa-check-circle"></i>
+                            <span>{% if libro.disponibilidad %}Disponible{% else %}No Disponible{% endif %}</span>
+                        </div>
+                        <div class="availability-info">
+                            <span>{{ libro.existencias }} copias disponibles</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalles del libro -->
+                <div class="book-details">
+                    <h1 class="book-title">{{ libro.titulo }}</h1>
+                    <div class="book-author">
+                        <span>Por</span>
+                        <a href="#" class="author-link">{{ libro.autor }}</a>
+                    </div>
+
+                    <div class="book-rating">
+                    <div class="rating-stars">
+                        {% if promedio_calificacion %}
+                            {% for i in "12345" %}
+                                {% if i <= promedio_calificacion|floatformat:0 %}
+                                    <i class="fas fa-star"></i>
+                                {% elif i == promedio_calificacion|floatformat:0|add:1 and promedio_calificacion|floatformat:1 != promedio_calificacion|floatformat:0 %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span>Sin calificaciones aún</span>
+                        {% endif %}
+                    </div>
+                    <div class="rating-count">
+                        <span>{% with libro.resenas.count as total_resenas %}{{ total_resenas }}{% endwith %} calificaciones</span>
+                    </div>
+                </div>
+
+                    <div class="book-metadata">
+                        <div class="metadata-item">
+                            <span class="metadata-label">Género:</span>
+                            <span class="metadata-value">{{ libro.genero.nombre_genero }}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">Año de publicación:</span>
+                            <span class="metadata-value">{{ libro.año_publicacion }}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">Editorial:</span>
+                            <span class="metadata-value">{{ libro.editorial }}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">ISBN:</span>
+                            <span class="metadata-value">{{ libro.ISBN }}</span>
+                        </div>
+                    </div>
+
+                    <div class="book-synopsis">
+                        <h3>Sinopsis</h3>
+                        <p>
+                            {% if libro.sinopsis %}
+                                {{ libro.sinopsis }}
+                            {% else %}
+                                Sinopsis no disponible.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs para reseñas y detalles adicionales -->
+            <div class="book-tabs">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="reviews">Reseñas y Calificaciones</button>
+                    <button class="tab-btn" data-tab="related">Libros Relacionados</button>
+                </div>
+
+                <div class="tabs-content">
+                    <!-- Tab de Reseñas -->
+                    <div id="reviews-tab" class="tab-content active">
+                    <div class="reviews-summary">
+                        <div class="rating-summary">
+                            <div class="average-rating">
+                                <span class="rating-number">{{ promedio_calificacion|floatformat:1 }}</span>
+                                <div class="rating-stars">
+                                    {% if promedio_calificacion %}
+                                        {% for i in "xxxxx"|slice:":{{ promedio_calificacion|floatformat:0 }}" %}
+                                            <i class="fas fa-star"></i>
+                                        {% endfor %}
+                                        {% if promedio_calificacion|floatformat:1 != promedio_calificacion|floatformat:0 %}
+                                            <i class="fas fa-star-half-alt"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <span>Sin calificaciones aún</span>
+                                    {% endif %}
+                                </div>
+                                <span class="rating-count">{{ total_resenas }} calificaciones</span>
+                            </div>
+
+                            <div class="rating-bars">
+                            {% for item in calificacion_percentages %}
+                                <div class="rating-bar-item">
+                                    <span class="rating-label">{{ item.calificacion }} <i class="fas fa-star"></i></span>
+                                    <div class="rating-bar">
+                                        <div class="rating-fill" style="width: {{ item.percentage|floatformat:0 }}%;"></div>
+                                    </div>
+                                    <span class="rating-percent">{{ item.percentage|floatformat:0 }}%</span>
+                                </div>
+                            {% endfor %}
+                            </div>
+                        </div>
+                          <div class="add-review">
+                              <h3>Califica este libro</h3>
+                              {% if request.user.is_authenticated %}
+                                  <button id="writeReviewBtn" class="btn btn-primary">Escribir una reseña</button>
+                              {% else %}
+                                  <p>Debes <a href="{% url 'login' %}?next={{ request.path }}">iniciar sesión</a> para dejar una reseña.</p>
+                              {% endif %}
+                          </div>
+                        </div>
+
+                        <div class="reviews-filter">
+                            <div class="filter-options">
+                                <select id="reviewsSort">
+                                    <option value="recent">Más recientes</option>
+                                    <option value="helpful">Más útiles</option>
+                                    <option value="highest">Mayor calificación</option>
+                                    <option value="lowest">Menor calificación</option>
+                                </select>
+                                <select id="reviewsFilter">
+                                    <option value="all">Todas las calificaciones</option>
+                                    <option value="5">5 estrellas</option>
+                                    <option value="4">4 estrellas</option>
+                                    <option value="3">3 estrellas</option>
+                                    <option value="2">2 estrellas</option>
+                                    <option value="1">1 estrella</option>
+                                </select>
+                            </div>
+                            <div class="search-box">
+                                <input type="text" id="searchReviews" placeholder="Buscar en las reseñas...">
+                                <button class="search-btn"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="reviews-list">
+                            <!-- Reseña 1 -->
+                                    <h3>Reseñas de otros usuarios</h3>
+                                    {% for resena in reseñas %}
+                                        <div class="review-card">
+                                            <div class="review-header">
+                                                <div class="reviewer-info">
+                                                    {% comment %} Aquí podrías mostrar la imagen del usuario si la tienes {% endcomment %}
+                                                    <img src="https://via.placeholder.com/40x40/10b981/FFFFFF?text={{ resena.usuario.username|slice:":2"|upper }}"     alt="Avatar de {{ resena.usuario.username }}" class="reviewer-avatar"/>
+                                                    <div>
+                                                        <h4 class="reviewer-name">{{ resena.usuario.username }}</h4>
+                                                        <div class="review-meta">
+                                                            <span class="review-date">{{ resena.fecha }}</span>
+                                                            <div class="reviewer-rating">
+                                                            {% for i in "12345" %}
+                                                                {% if i <= resena.calificacion %}
+                                                                    <i class="fas fa-star"></i>
+                                                                {% else %}
+                                                                    <i class="far fa-star"></i>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            <div class="review-content">
+                                                <p>{{ resena.comentario }}</p>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <p>Aún no hay reseñas para este libro. ¡Sé el primero en dejar una!</p>
+                                    {% endfor %}
+                            <!-- Paginación de reseñas -->
+                            <div class="pagination">
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn">2</button>
+                                <button class="pagination-btn">3</button>
+                                <button class="pagination-btn">4</button>
+                                <button class="pagination-btn">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <button class="pagination-btn">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab de Libros Relacionados -->
+                    <div id="related-tab" class="tab-content">
+                        <div class="related-books">
+                            <h3>Libros Relacionados</h3>
+                            <p>Si te gustó "Cien Años de Soledad", también podrían interesarte estos libros:</p>
+
+                            <div class="related-books-grid">
+                                <!-- Libro relacionado 1 -->
+                                <div class="related-book-card">
+                                    <div class="related-book-cover">
+                                        <img src="https://via.placeholder.com/150x225/ef4444/FFFFFF?text=El+Amor+en+los+Tiempos+del+Cólera"
+                                            alt="El Amor en los Tiempos del Cólera">
+                                    </div>
+                                    <div class="related-book-info">
+                                        <h4>El Amor en los Tiempos del Cólera</h4>
+                                        <p class="related-book-author">Gabriel García Márquez</p>
+                                        <div class="related-book-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                            <span>4.5</span>
+                                        </div>
+                                        <a href="#" class="btn btn-outline btn-sm">Ver detalles</a>
+                                    </div>
+                                </div>
+
+                                <!-- Libro relacionado 2 -->
+                                <div class="related-book-card">
+                                    <div class="related-book-cover">
+                                        <img src="https://via.placeholder.com/150x225/10b981/FFFFFF?text=Pedro+Páramo"
+                                            alt="Pedro Páramo">
+                                    </div>
+                                    <div class="related-book-info">
+                                        <h4>Pedro Páramo</h4>
+                                        <p class="related-book-author">Juan Rulfo</p>
+                                        <div class="related-book-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <span>4.0</span>
+                                        </div>
+                                        <a href="#" class="btn btn-outline btn-sm">Ver detalles</a>
+                                    </div>
+                                </div>
+
+                                <!-- Libro relacionado 3 -->
+                                <div class="related-book-card">
+                                    <div class="related-book-cover">
+                                        <img src="https://via.placeholder.com/150x225/6366f1/FFFFFF?text=La+Casa+de+los+Espíritus"
+                                            alt="La Casa de los Espíritus">
+                                    </div>
+                                    <div class="related-book-info">
+                                        <h4>La Casa de los Espíritus</h4>
+                                        <p class="related-book-author">Isabel Allende</p>
+                                        <div class="related-book-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <span>4.2</span>
+                                        </div>
+                                        <a href="#" class="btn btn-outline btn-sm">Ver detalles</a>
+                                    </div>
+                                </div>
+
+                                <!-- Libro relacionado 4 -->
+                                <div class="related-book-card">
+                                    <div class="related-book-cover">
+                                        <img src="https://via.placeholder.com/150x225/f59e0b/FFFFFF?text=Rayuela"
+                                            alt="Rayuela">
+                                    </div>
+                                    <div class="related-book-info">
+                                        <h4>Rayuela</h4>
+                                        <p class="related-book-author">Julio Cortázar</p>
+                                        <div class="related-book-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <span>4.1</span>
+                                        </div>
+                                        <a href="#" class="btn btn-outline btn-sm">Ver detalles</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para escribir reseña -->
+<div id="reviewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Escribir una reseña</h3>
+            <button id="closeReviewModal" class="close-modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="reviewForm" **method="post" action="{% url 'crear_resena' libro.id %}">**
+                {% csrf_token %}
+                <div class="form-section">
+                    <h4>Tu calificación</h4>
+                    <div class="modal-rating-input">
+                        <div class="star-rating large">
+                            <i class="far fa-star" data-rating="1"></i>
+                            <i class="far fa-star" data-rating="2"></i>
+                            <i class="far fa-star" data-rating="3"></i>
+                            <i class="far fa-star" data-rating="4"></i>
+                            <i class="far fa-star" data-rating="5"></i>
+                        </div>
+                        <span class="rating-text">Selecciona una calificación</span>
+                        <input type="hidden" id="id_calificacion" name="calificacion">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4>Tu reseña</h4>
+                    <div class="form-group">
+                        <label for="reviewTitle">Título de tu reseña</label>
+                        <input type="text" id="reviewTitle" name="comentario" placeholder="Escribe un título para tu reseña" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewContent">Contenido de tu reseña</label>
+                        <textarea id="reviewContent" rows="6" name="comentario"
+                            placeholder="Comparte tus pensamientos sobre este libro..." required></textarea>
+                        <p class="form-help">Mínimo 50 caracteres. No incluyas enlaces o contenido inapropiado.</p>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="cancelReview" class="btn btn-outline" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Publicar reseña</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="https://via.placeholder.com/40x40/10b981/FFFFFF?text=BV" alt="Logo Biblioteca Virtual">
+                    <h3>Biblioteca Virtual</h3>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Acerca de</a>
+                    <a href="#">Términos de Servicio</a>
+                    <a href="#">Política de Privacidad</a>
+                    <a href="#">Contacto</a>
+                    <a href="#">Ayuda</a>
+                </div>
+                <p>&copy; <span id="currentYear">2023</span> Biblioteca Virtual. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/detalle.js'%}"></script>
+</body>
+
+</html>

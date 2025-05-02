@@ -1,13 +1,13 @@
 from django.db import models
-from usuarios.models import Usuario
+from django.conf import settings
 from libros.models import Libro
 
-class Resena(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
-    calificacion = models.PositiveSmallIntegerField()  # Ej: del 1 al 5
+class Reseña(models.Model):
+    libro = models.ForeignKey(Libro, on_delete=models.CASCADE, related_name='resenas')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     comentario = models.TextField()
-    fecha_resena = models.DateField(auto_now_add=True)
+    calificacion = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+    fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Reseña de {self.usuario.username} sobre {self.libro.titulo}"
+        return f'{self.usuario.username} - {self.libro.titulo} ({self.calificacion}⭐)'

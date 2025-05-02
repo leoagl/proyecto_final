@@ -27,8 +27,16 @@
                 </ul>
             </nav>
             <div class="auth-buttons">
-                <a href="{% url 'login' %}" class="btn btn-outline">Iniciar Sesión</a>
+            {% if request.user.is_authenticated %}
+                <span class="welcome-msg">Bienvenido {{ request.user.username }}</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline active">Iniciar Sesión</a>
                 <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
+            {% endif %}
             </div>
             <button class="menu-toggle" id="menuToggle">
                 <span></span>
@@ -180,36 +188,38 @@
 
                         <div class="books-grid" id="booksContainer">
                         {% for libro in libros %}
-                        <div class="book-card">
-                            <div class="book-cover">
-                                {% if libro.portada %}
-                                    <img src="{{ libro.portada.url }}" alt="{{ libro.titulo }}">
-                                {% else %}
-                                    <img src="https://via.placeholder.com/120x160?text=Sin+Portada" alt="Sin portada">
-                                {% endif %}
-                                <div class="book-availability {% if libro.disponibilidad %}available{% else %}borrowed{% endif %}">
-                                    <span>{% if libro.disponibilidad %}Disponible{% else %}Prestado{% endif %}</span>
+                        <a href="{% url 'detalle_libro' libro.id %}" class="book-card-link" style="text-decoration: none; color: inherit;">
+                            <div class="book-card">
+                                <div class="book-cover">
+                                    {% if libro.portada %}
+                                        <img src="{{ libro.portada.url }}" alt="{{ libro.titulo }}">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/120x160?text=Sin+Portada" alt="Sin portada">
+                                    {% endif %}
+                                    <div class="book-availability {% if libro.disponibilidad %}available{% else %}borrowed{% endif %}">
+                                        <span>{% if libro.disponibilidad %}Disponible{% else %}Prestado{% endif %}</span>
+                                    </div>
+                                </div>
+                                <div class="book-info">
+                                    <h3 class="book-title">{{ libro.titulo }}</h3>
+                                    <p class="book-author">{{ libro.autor }}</p>
+                                    <div class="book-meta">
+                                        <span class="book-category">{{ libro.genero.nombre_genero }}</span>
+                                        <span class="book-year">{{ libro.año_publicacion }}</span>
+                                    </div>
+                                    <div class="book-actions">
+                                        <button class="btn btn-outline btn-sm" type="button">
+                                            <i class="far fa-heart"></i>
+                                            Guardar
+                                        </button>
+                                        <button class="btn btn-primary btn-sm" type="button">
+                                            <i class="fas fa-book-open"></i>
+                                            Leer
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="book-info">
-                                <h3 class="book-title">{{ libro.titulo }}</h3>
-                                <p class="book-author">{{ libro.autor }}</p>
-                                <div class="book-meta">
-                                    <span class="book-category">{{ libro.genero.nombre_genero }}</span>
-                                    <span class="book-year">{{ libro.año_publicacion }}</span>
-                                </div>
-                                <div class="book-actions">
-                                    <button class="btn btn-outline btn-sm">
-                                        <i class="far fa-heart"></i>
-                                        Guardar
-                                    </button>
-                                    <button class="btn btn-primary btn-sm">
-                                        <i class="fas fa-book-open"></i>
-                                        Leer
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        </a>
                         {% empty %}
                         <p>No hay libros disponibles en este momento.</p>
                         {% endfor %}

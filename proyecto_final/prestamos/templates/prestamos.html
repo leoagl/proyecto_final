@@ -22,25 +22,21 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="{% url 'inicio' %}">Inicio</a></li>
-                    <li><a href="{% url 'catalogo' %}">Catálogo</a></li>
-                    <li><a href="{% url 'prestamos' %}" class="active">Mis Préstamos</a></li>
+                    <li><a href="{% url 'catalogo' %}" >Catálogo</a></li>
+                    <li><a href="{% url 'prestamos' %}" class="active">Prestamos</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons">
-                <div class="user-menu">
-                    <button class="user-menu-btn">
-                        <img src="https://via.placeholder.com/32/10b981/FFFFFF?text=U" alt="Usuario" class="user-avatar">
-                        <span>Ana García</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="user-dropdown">
-                        <a href="#"><i class="fas fa-user"></i> Mi Perfil</a>
-                        <a href="#"><i class="fas fa-heart"></i> Favoritos</a>
-                        <a href="#"><i class="fas fa-history"></i> Historial</a>
-                        <a href="#"><i class="fas fa-cog"></i> Configuración</a>
-                        <a href="login.html" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
-                    </div>
-                </div>
+            {% if request.user.is_authenticated %}
+                <span class="welcome-msg">Bienvenido {{ request.user.username }}</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline active">Iniciar Sesión</a>
+                <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
+            {% endif %}
             </div>
             <button class="menu-toggle" id="menuToggle">
                 <span></span>

@@ -1,11 +1,15 @@
 from django.core.paginator import Paginator
-from django.db.models import Min, Max
+from django.contrib import messages
+from django.db.models import Min, Max, Avg, Count
 from django.http import JsonResponse
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Libro, Genero
 from django.db.models import Q
 import requests
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from resenas.forms import ReseñaForm
 from urllib.parse import quote
 
 
@@ -115,3 +119,64 @@ def catalogo(request):
         'rango_anyos': rangos,
         'query': query,
     })
+
+def detalle_libro(request, libro_id):
+    libro = get_object_or_404(Libro, pk=libro_id)
+    resenas = libro.resenas.select_related('usuario').order_by('-fecha')
+    promedio_calificacion = libro.resenas.aggregate(avg_calificacion=Avg('calificacion'))['avg_calificacion']
+    total_resenas = libro.resenas.count()
+    calificacion_counts = libro.resenas.values('calificacion').annotate(count=Count('calificacion')).order_by('-calificacion')
+
+    # Calcular el porcentaje para cada calificación
+    calificacion_percentages = []
+    if total_resenas > 0:
+        for count_item in calificacion_counts:
+            percentage = (count_item['count'] * 100) / total_resenas
+            calificacion_percentages.append({'calificacion': count_item['calificacion'], 'percentage': percentage})
+
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            form = ReseñaForm(request.POST)
+            if form.is_valid():
+                reseña = form.save(commit=False)
+                reseña.usuario = request.user
+                reseña.libro = libro
+                reseña.save()
+                return redirect('detalle_libro', libro_id=libro.id)
+        else:
+            return redirect('login')
+    else:
+        form = ReseñaForm()
+
+    context = {
+        'libro': libro,
+        'reseñas': resenas,
+        'form': form,
+        'promedio_calificacion': promedio_calificacion,
+        'total_resenas': total_resenas,
+        'calificacion_counts': calificacion_counts,
+        'calificacion_percentages': calificacion_percentages, # Pasa los porcentajes calculados
+    }
+    return render(request, 'libros/detalle_libro.html', context)
+
+@login_required
+def crear_resena(request, libro_id):
+    libro = get_object_or_404(Libro, pk=libro_id)
+    if request.method == 'POST':
+        form = ReseñaForm(request.POST)
+        if form.is_valid():
+            resena = form.save(commit=False)
+            resena.libro = libro
+            resena.usuario = request.user
+            resena.save()
+            messages.success(request, '¡Tu reseña ha sido publicada!')
+            return redirect('detalle_libro', libro_id=libro_id)
+        else:
+            messages.error(request, 'Hubo un error al enviar tu reseña.')
+    else:
+        form = ReseñaForm()
+    context = {
+        'libro': libro,
+        'form': form,
+    }
+    return render(request, 'libros/detalle_libro.html', context)
