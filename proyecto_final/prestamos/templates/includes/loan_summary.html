@@ -1,0 +1,20 @@
+<div class="summary-row">
+    <span class="summary-label">Libros seleccionados:</span>
+    <span class="summary-value" id="summaryBooks">
+        {% if selected_books %}
+            {% for book in selected_books %}
+                {{ book.titulo }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        {% else %}
+            Ninguno
+        {% endif %}
+    </span>
+</div>
+<div class="summary-row">
+    <span class="summary-label">Fecha de préstamo:</span>
+    <span class="summary-value" id="summaryLoanDate">{{ today|date:'d M, Y' }}</span>
+</div>
+<div class="summary-row">
+    <span class="summary-label">Fecha de devolución:</span>
+    <span class="summary-value" id="summaryReturnDate">{{ return_date|date:'d M, Y' }}</span>
+</div>

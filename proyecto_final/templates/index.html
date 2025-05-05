@@ -21,7 +21,7 @@
                 <ul>
                     <li><a href="{% url 'inicio' %}" class="active">Inicio</a></li>
                     <li><a href="{% url 'catalogo' %}">Catálogo</a></li>
-                    <li><a href="{% url 'prestamos' %}">Prestamos</a></li>
+                    <li><a href="{% url 'prestamos:prestamos' %}">Prestamos</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons">
@@ -49,7 +49,7 @@
         <ul>
             <li><a href="{% url 'inicio' %}" class="active">Inicio</a></li>
             <li><a href="{% url 'catalogo' %}">Catálogo</a></li>
-            <li><a href="{% url 'prestamos' %}">Prestamos</a></li>
+            <li><a href="{% url 'prestamos:prestamos' %}">Prestamos</a></li>
             <li class="mobile-auth">
                 {% if request.user.is_authenticated %}
                     <span class="welcome-msg">Bienvenido {{ request.user.username }}</span><br>

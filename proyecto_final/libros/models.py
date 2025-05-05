@@ -17,7 +17,7 @@ class Libro(models.Model):
     genero = models.ForeignKey(Genero, on_delete=models.CASCADE)
     existencias = models.PositiveIntegerField(default=1)
     portada = models.ImageField(upload_to='portadas/', null=True, blank=True)
-    portada_url = models.URLField(blank=True, null=True)  # <--- AÑADE ESTE CAMPO
+    portada_url = models.URLField(blank=True, null=True)
 
     def portada_preview(self):
         if self.portada:

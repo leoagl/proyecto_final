@@ -23,7 +23,7 @@
                 <ul>
                     <li><a href="{% url 'inicio' %}">Inicio</a></li>
                     <li><a href="{% url 'catalogo' %}" class="active">Catálogo</a></li>
-                    <li><a href="{% url 'prestamos' %}">Prestamos</a></li>
+                    <li><a href="{% url 'prestamos:prestamos' %}">Prestamos</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons">
@@ -51,7 +51,7 @@
         <ul>
             <li><a href="{% url 'inicio' %}">Inicio</a></li>
             <li><a href="{% url 'catalogo' %}" class="active">Catálogo</a></li>
-            <li><a href="{% url 'prestamos' %}">Prestamos</a></li>
+            <li><a href="{% url 'prestamos:prestamos' %}">Prestamos</a></li>
             <li class="mobile-auth">
                     <!-- Falta agregar la lógica -->
                 <a href="{% url 'login' %}" class="btn btn-outline">Iniciar Sesión</a>

@@ -9,5 +9,13 @@ class Prestamo(models.Model):
     fecha_vencimiento = models.DateField()
     fecha_devolucion = models.DateField(null=True, blank=True)
 
+    ESTADO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('activo', 'Activo'),
+        ('vencido', 'Vencido'),
+        ('devuelto', 'Devuelto'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
+
     def __str__(self):
         return f"{self.usuario.username} prestó {self.libro.titulo}"

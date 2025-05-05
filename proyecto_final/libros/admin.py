@@ -16,11 +16,14 @@ class LibroAdminForm(forms.ModelForm):
 
     class Media:
             js = ('js/autocompletar_libro.js',)
+
     def clean(self):
         cleaned_data = super().clean()
         isbn = cleaned_data.get('ISBN')
-        if isbn and Libro.objects.filter(ISBN=isbn).exists():
-            raise forms.ValidationError(f"Ya existe un libro con ISBN {isbn}.")
+        if isbn:
+            # Si ya existe un libro con ese ISBN y no es el mismo que estamos editando
+            if Libro.objects.filter(ISBN=isbn).exclude(pk=self.instance.pk).exists():
+                raise forms.ValidationError(f"Ya existe un libro con ISBN {isbn}.")
         return cleaned_data
 
     def save(self, commit=True):
@@ -59,7 +62,7 @@ class LibroAdminForm(forms.ModelForm):
 class LibroAdmin(admin.ModelAdmin):
     form = LibroAdminForm
     readonly_fields = ('vista_previa_portada',)
-    fields = ('titulo', 'autor', 'editorial', 'año_publicacion', 'ISBN', 'portada_url', 'portada', 'vista_previa_portada', 'genero')
+    fields = ('titulo', 'autor', 'editorial', 'año_publicacion', 'ISBN', 'portada_url', 'portada', 'vista_previa_portada', 'genero', 'existencias')
 
     list_display = ('titulo', 'autor', 'editorial', 'año_publicacion', 'miniatura_portada')
     list_display_links = ('titulo',)  # Para que el título sea el enlace a editar
