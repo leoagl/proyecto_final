@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 
 
 # Create your views here.
+@login_required(login_url='login')
 def prestamos(request):
     libros_disponibles = Libro.objects.filter(disponibilidad=True)
     prestamos_actuales_count = Prestamo.objects.filter(usuario=request.user, estado__in=['activo', 'pendiente', 'vencido']).count()
